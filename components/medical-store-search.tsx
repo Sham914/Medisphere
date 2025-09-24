@@ -50,6 +50,22 @@ export default function MedicalStoreSearch({ initialStores }: MedicalStoreSearch
     return { status: "Open", color: "bg-green-100 text-green-700" }
   }
 
+  const [showPhone, setShowPhone] = useState<string | null>(null)
+  const [showMap, setShowMap] = useState<string | null>(null)
+  const [mapCoords, setMapCoords] = useState<{lat: number, lng: number} | null>(null)
+  const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+
+  const handleCallClick = (phone: string) => {
+    setShowPhone(phone)
+    setShowMap(null)
+  }
+
+  const handleDirectionsClick = (store: any) => {
+    setShowMap(store.id)
+    setShowPhone(null)
+    setMapCoords({ lat: store.latitude, lng: store.longitude })
+  }
+
   return (
     <div className="space-y-6">
       {/* Search Filters */}
@@ -91,7 +107,7 @@ export default function MedicalStoreSearch({ initialStores }: MedicalStoreSearch
             const operatingStatus = getOperatingStatus(store.operating_hours)
 
             return (
-              <Card key={store.id} className="bg-white border-0 shadow-lg hover:shadow-xl transition-shadow">
+              <Card key={store.id} className="bg-white border-0 shadow-lg hover:shadow-xl transition-shadow relative">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -133,6 +149,33 @@ export default function MedicalStoreSearch({ initialStores }: MedicalStoreSearch
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
+                    {/* Show phone number above buttons if requested */}
+                    {showPhone === store.phone && (
+                      <div className="mb-2 flex flex-col items-start">
+                        <a
+                          href={`tel:${store.phone}`}
+                          className="text-lg font-bold text-green-700 underline hover:text-green-900"
+                        >
+                          {store.phone}
+                        </a>
+                        <span className="text-xs text-gray-500">Tap to call</span>
+                      </div>
+                    )}
+                    {/* Show Google Map if requested */}
+                    {showMap === store.id && mapCoords && (
+                      <div className="mb-2 w-full h-64 rounded overflow-hidden border border-green-200">
+                        <iframe
+                          title="Google Map"
+                          width="100%"
+                          height="100%"
+                          style={{ border: 0 }}
+                          loading="lazy"
+                          allowFullScreen
+                          referrerPolicy="no-referrer-when-downgrade"
+                          src={`https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_API_KEY}&q=${encodeURIComponent(store.name + ', ' + store.address)}&center=${mapCoords.lat},${mapCoords.lng}&zoom=16`}
+                        ></iframe>
+                      </div>
+                    )}
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <span className="text-gray-600">Operating Hours:</span>
@@ -149,11 +192,19 @@ export default function MedicalStoreSearch({ initialStores }: MedicalStoreSearch
                       <Link href={`/medical-stores/${store.id}`}>
                         <Button className="bg-green-600 hover:bg-green-700">View Details</Button>
                       </Link>
-                      <Button variant="outline" className="border-green-200 hover:bg-green-50 bg-transparent">
+                      <Button
+                        variant="outline"
+                        className="border-green-200 hover:bg-green-50 bg-transparent"
+                        onClick={() => handleCallClick(store.phone)}
+                      >
                         <Phone className="h-4 w-4 mr-2" />
                         Call Store
                       </Button>
-                      <Button variant="outline" className="border-green-200 hover:bg-green-50 bg-transparent">
+                      <Button
+                        variant="outline"
+                        className="border-green-200 hover:bg-green-50 bg-transparent"
+                        onClick={() => handleDirectionsClick(store)}
+                      >
                         <MapPin className="h-4 w-4 mr-2" />
                         Get Directions
                       </Button>

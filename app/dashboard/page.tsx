@@ -3,6 +3,13 @@ import { createClient } from "@/lib/supabase/server"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Heart, Hospital, MapPin, Pill, Users, Calendar } from "lucide-react"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu"
 import Link from "next/link"
 
 export default async function DashboardPage() {
@@ -16,8 +23,13 @@ export default async function DashboardPage() {
     redirect("/auth/login")
   }
 
-  // Get user profile
-  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
+  // Get user profile (fallback to auth user if no profile table)
+  // const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
+  const profile = {
+    full_name: user.user_metadata?.full_name || user.email?.split("@")[0] || "User",
+    email: user.email,
+    avatar_url: user.user_metadata?.avatar_url || "/placeholder-user.jpg",
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -31,12 +43,27 @@ export default async function DashboardPage() {
             <h1 className="text-2xl font-bold text-gray-900">Medisphere</h1>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600">Welcome, {profile?.full_name || "User"}</span>
-            <form action="/auth/signout" method="post">
-              <Button variant="ghost" type="submit" className="text-gray-700 hover:text-red-600">
-                Sign Out
-              </Button>
-            </form>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="flex items-center gap-2 px-3 py-1.5">
+                  <Avatar>
+                    <AvatarImage src={profile.avatar_url} alt={profile.full_name} />
+                    <AvatarFallback>{profile.full_name?.[0] || "U"}</AvatarFallback>
+                  </Avatar>
+                  <span className="font-medium text-gray-900">Hi, {profile.full_name}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <Link href="/profile">Profile</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <form action="/auth/signout" method="post">
+                    <button type="submit" className="w-full text-left">Sign Out</button>
+                  </form>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>

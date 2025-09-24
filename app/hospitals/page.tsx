@@ -22,7 +22,7 @@ export default async function HospitalsPage() {
     .select("*")
     .order("rating", { ascending: false })
     .limit(20)
-
+console.log(hospitals,hospitalsError)
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Header */}
