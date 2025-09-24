@@ -266,6 +266,6 @@ export default function MedicalStoreSearch({ initialStores }: MedicalStoreSearch
           </Card>
         )}
       </div>
-    </div>
+	</div>
   )
-
+}
