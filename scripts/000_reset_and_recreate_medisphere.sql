@@ -1,25 +1,14 @@
 -- RESET AND RECREATE THE FULL DATABASE FOR MEDISPHERE
 -- WARNING: This will drop all existing tables and data!
 
--- 1. Drop all tables (in dependency order)
 DROP TABLE IF EXISTS public.blood_requests CASCADE;
 DROP TABLE IF EXISTS public.blood_donors CASCADE;
 DROP TABLE IF EXISTS public.medicine_reminders CASCADE;
 DROP TABLE IF EXISTS public.medical_stores CASCADE;
 DROP TABLE IF EXISTS public.doctors CASCADE;
 DROP TABLE IF EXISTS public.hospitals CASCADE;
-DROP TABLE IF EXISTS public.profiles CASCADE;
 
--- 2. Recreate tables
-CREATE TABLE IF NOT EXISTS public.profiles (
-  id UUID PRIMARY KEY,
-  email TEXT NOT NULL,
-  full_name TEXT NOT NULL,
-  phone TEXT,
-  role TEXT NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin')),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+
 
 CREATE TABLE IF NOT EXISTS public.hospitals (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -116,8 +105,6 @@ CREATE TABLE IF NOT EXISTS public.blood_requests (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 3. Enable RLS
-ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.hospitals ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.doctors ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.medical_stores ENABLE ROW LEVEL SECURITY;
@@ -125,11 +112,6 @@ ALTER TABLE public.medicine_reminders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.blood_donors ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.blood_requests ENABLE ROW LEVEL SECURITY;
 
--- 4. RLS Policies
--- Profiles: Only user can access their own profile
-CREATE POLICY "Users can view their own profile" ON public.profiles FOR SELECT USING (auth.uid() = id);
-CREATE POLICY "Users can update their own profile" ON public.profiles FOR UPDATE USING (auth.uid() = id);
-CREATE POLICY "Users can insert their own profile" ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id);
 
 -- Hospitals: Anyone can view
 CREATE POLICY "Anyone can view hospitals" ON public.hospitals FOR SELECT USING (true);

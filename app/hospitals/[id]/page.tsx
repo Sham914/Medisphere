@@ -3,8 +3,11 @@ import { redirect, notFound } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Heart, MapPin, Phone, Mail, Star, Clock, Users, ArrowLeft, Navigation, Award, Shield, Calendar } from "lucide-react"
+import { Heart, MapPin, Phone, Mail, Star, Clock, Users, ArrowLeft, Award, Shield } from "lucide-react"
 import Link from "next/link"
+
+import dynamic from "next/dynamic"
+const HospitalActions = dynamic(() => import("@/components/hospital-actions"), { ssr: false })
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -25,15 +28,13 @@ export default async function HospitalDetailPage({ params }: PageProps) {
   // Get hospital details
   const { data: hospital } = await supabase.from("hospitals").select("*").eq("id", id).single()
 
+  // Type assertions for specialties and available_days
+  const specialties: string[] = Array.isArray(hospital?.specialties) ? hospital.specialties : []
+
   if (!hospital) {
     notFound()
   }
 
-  const openGoogleMaps = (address: string, name: string) => {
-    const encodedAddress = encodeURIComponent(`${name}, ${address}`)
-    const url = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`
-    window.open(url, '_blank')
-  }
 
   // Get doctors for this hospital
   const { data: doctors } = await supabase
@@ -120,30 +121,14 @@ export default async function HospitalDetailPage({ params }: PageProps) {
                   Medical Specialties
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                  {hospital.specialties.map((specialty) => (
+                  {specialties.map((specialty: string) => (
                     <Badge key={specialty} variant="secondary" className="bg-blue-100 text-blue-700 text-sm px-3 py-2 hover:bg-blue-200 transition-colors">
                       {specialty}
                     </Badge>
                   ))}
                 </div>
               </div>
-              <div className="flex gap-3 pt-4">
-                <Button 
-                  className="bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all"
-                  onClick={() => openGoogleMaps(hospital.address, hospital.name)}
-                >
-                  <Navigation className="h-4 w-4 mr-2" />
-                  Get Directions
-                </Button>
-                <Button variant="outline" className="border-blue-200 hover:bg-blue-50 shadow-md hover:shadow-lg transition-all">
-                  <Phone className="h-4 w-4 mr-2" />
-                  Call Hospital
-                </Button>
-                <Button variant="outline" className="border-green-200 hover:bg-green-50 shadow-md hover:shadow-lg transition-all">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Book Appointment
-                </Button>
-              </div>
+              <HospitalActions address={hospital.address} name={hospital.name} phone={hospital.phone} />
             </div>
           </CardContent>
         </Card>
@@ -193,7 +178,7 @@ export default async function HospitalDetailPage({ params }: PageProps) {
                         <div>
                           <span className="text-gray-600 block mb-1">Available Days:</span>
                           <div className="flex flex-wrap gap-1">
-                            {doctor.available_days.map((day) => (
+                            {(Array.isArray(doctor.available_days) ? doctor.available_days : []).map((day: string) => (
                               <Badge key={day} variant="outline" className="text-xs">
                                 {day}
                               </Badge>
@@ -209,7 +194,6 @@ export default async function HospitalDetailPage({ params }: PageProps) {
                       )}
                       <div className="pt-2">
                         <Button className="w-full bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all">
-                          <Calendar className="h-4 w-4 mr-2" />
                           Book Appointment
                         </Button>
                       </div>

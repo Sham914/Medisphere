@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { MapPin, Phone, Mail, Star, Clock, Shield, Navigation, Pill, Award, CheckCircle } from "lucide-react"
 import Link from "next/link"
 
+
 interface MedicalStoreSearchProps {
   initialStores: any[]
 }
@@ -38,7 +39,6 @@ export default function MedicalStoreSearch({ initialStores }: MedicalStoreSearch
     const debounceTimer = setTimeout(() => {
       searchStores()
     }, 300)
-
     return () => clearTimeout(debounceTimer)
   }, [searchTerm])
 
@@ -50,7 +50,6 @@ export default function MedicalStoreSearch({ initialStores }: MedicalStoreSearch
     return { status: "Open", color: "bg-green-100 text-green-700" }
   }
 
-<<<<<<< HEAD
   const [showPhone, setShowPhone] = useState<string | null>(null)
   const [showMap, setShowMap] = useState<string | null>(null)
   const [mapCoords, setMapCoords] = useState<{lat: number, lng: number} | null>(null)
@@ -65,12 +64,13 @@ export default function MedicalStoreSearch({ initialStores }: MedicalStoreSearch
     setShowMap(store.id)
     setShowPhone(null)
     setMapCoords({ lat: store.latitude, lng: store.longitude })
-=======
+  }
+
+  // Also allow opening Google Maps in a new tab
   const openGoogleMaps = (address: string, name: string) => {
     const encodedAddress = encodeURIComponent(`${name}, ${address}`)
     const url = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`
     window.open(url, '_blank')
->>>>>>> c8ffa95e10faf42fff027dfa7bfb99e7f6e02398
   }
 
   return (
@@ -116,11 +116,7 @@ export default function MedicalStoreSearch({ initialStores }: MedicalStoreSearch
             const operatingStatus = getOperatingStatus(store.operating_hours)
 
             return (
-<<<<<<< HEAD
-              <Card key={store.id} className="bg-white border-0 shadow-lg hover:shadow-xl transition-shadow relative">
-=======
               <Card key={store.id} className="bg-white border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] group">
->>>>>>> c8ffa95e10faf42fff027dfa7bfb99e7f6e02398
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -174,7 +170,6 @@ export default function MedicalStoreSearch({ initialStores }: MedicalStoreSearch
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-<<<<<<< HEAD
                     {/* Show phone number above buttons if requested */}
                     {showPhone === store.phone && (
                       <div className="mb-2 flex flex-col items-start">
@@ -202,20 +197,12 @@ export default function MedicalStoreSearch({ initialStores }: MedicalStoreSearch
                         ></iframe>
                       </div>
                     )}
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <span className="text-gray-600">Operating Hours:</span>
-                        <p className="font-medium">{store.operating_hours}</p>
-                      </div>
-                      {store.license_number && (
-=======
                     <div className="bg-gray-50 p-4 rounded-lg">
                       <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
                         <Award className="h-4 w-4 text-green-600" />
                         Store Information
                       </h4>
                       <div className="grid grid-cols-2 gap-4 text-sm">
->>>>>>> c8ffa95e10faf42fff027dfa7bfb99e7f6e02398
                         <div>
                           <span className="text-gray-600">Operating Hours:</span>
                           <p className="font-medium">{store.operating_hours}</p>
@@ -235,7 +222,6 @@ export default function MedicalStoreSearch({ initialStores }: MedicalStoreSearch
                           View Details
                         </Button>
                       </Link>
-<<<<<<< HEAD
                       <Button
                         variant="outline"
                         className="border-green-200 hover:bg-green-50 bg-transparent"
@@ -250,22 +236,16 @@ export default function MedicalStoreSearch({ initialStores }: MedicalStoreSearch
                         onClick={() => handleDirectionsClick(store)}
                       >
                         <MapPin className="h-4 w-4 mr-2" />
-                        Get Directions
+                        Show Map
                       </Button>
-=======
                       <Button 
                         variant="outline" 
                         className="border-green-200 hover:bg-green-50 bg-transparent shadow-md hover:shadow-lg transition-all"
                         onClick={() => openGoogleMaps(store.address, store.name)}
                       >
                         <Navigation className="h-4 w-4 mr-2" />
-                        Get Directions
+                        Open in Google Maps
                       </Button>
-                      <Button variant="outline" className="border-green-200 hover:bg-green-50 bg-transparent shadow-md hover:shadow-lg transition-all">
-                        <Phone className="h-4 w-4 mr-2" />
-                        Call Store
-                      </Button>
->>>>>>> c8ffa95e10faf42fff027dfa7bfb99e7f6e02398
                     </div>
                   </div>
                 </CardContent>
@@ -288,4 +268,4 @@ export default function MedicalStoreSearch({ initialStores }: MedicalStoreSearch
       </div>
     </div>
   )
-}
+

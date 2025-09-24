@@ -1,10 +1,12 @@
 
 "use client"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+import { toast } from "sonner"
 
 export default function ProfilePage() {
   type Profile = {
@@ -12,6 +14,10 @@ export default function ProfilePage() {
     email: string;
     phone: string;
     city?: string;
+    avatar_url?: string;
+    created_at?: string;
+    last_sign_in_at?: string;
+    email_confirmed?: boolean;
   }
   type Reminder = {
     medicine_name: string;
@@ -32,8 +38,10 @@ export default function ProfilePage() {
   const [reminders, setReminders] = useState<Reminder[]>([])
   const [blood, setBlood] = useState<Blood | null>(null)
   const [editMode, setEditMode] = useState(false)
-  const [form, setForm] = useState({ full_name: "", phone: "", city: "" })
+  const [form, setForm] = useState({ full_name: "", phone: "", city: "", avatar_url: "" })
   const [loading, setLoading] = useState(true)
+  const [avatarUploading, setAvatarUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,17 +55,24 @@ export default function ProfilePage() {
         window.location.href = "/auth/login"
         return
       }
-      // Profile
-      const { data: profileData } = await supabase
-        .from("profiles")
-        .select("full_name, email, phone, city")
-        .eq("id", user.id)
-        .single()
+      // Profile from auth.users
+      const meta = user.user_metadata || {}
+      const profileData: Profile = {
+        full_name: meta.full_name || user.email?.split("@")[0] || "User",
+        email: user.email || "",
+        phone: meta.phone || "",
+        city: meta.city || "",
+        avatar_url: meta.avatar_url || "/placeholder-user.jpg",
+        created_at: user.created_at,
+        last_sign_in_at: user.last_sign_in_at,
+        email_confirmed: user.email_confirmed_at ? true : false,
+      }
       setProfile(profileData)
       setForm({
-        full_name: profileData?.full_name || "",
-        phone: profileData?.phone || "",
-        city: profileData?.city || "",
+        full_name: profileData.full_name,
+        phone: profileData.phone,
+        city: profileData.city || "",
+        avatar_url: profileData.avatar_url || "",
       })
       // Reminders
       const { data: remindersData } = await supabase
@@ -84,6 +99,7 @@ export default function ProfilePage() {
       full_name: profile?.full_name || "",
       phone: profile?.phone || "",
       city: profile?.city || "",
+      avatar_url: profile?.avatar_url || "",
     })
   }
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -96,26 +112,90 @@ export default function ProfilePage() {
       data: { user },
     } = await supabase.auth.getUser()
     if (!user) return
-    await supabase
-      .from("profiles")
-      .update({
-        full_name: form.full_name,
-        phone: form.phone,
-        city: form.city,
-      })
-      .eq("id", user.id)
-    setProfile({ ...profile!, ...form, email: profile?.email || "" })
-    setEditMode(false)
+    // Update user_metadata in auth.users
+    const updates = {
+      full_name: form.full_name,
+      phone: form.phone,
+      city: form.city,
+      avatar_url: form.avatar_url,
+    }
+    const { error } = await supabase.auth.updateUser({ data: updates })
+    if (error) {
+      toast.error("Failed to update profile: " + error.message)
+    } else {
+      setProfile({ ...profile!, ...form, email: profile?.email || "" })
+      setEditMode(false)
+      toast.success("Profile updated!")
+    }
     setLoading(false)
+  }
+
+  // Avatar upload handler
+  const handleAvatarClick = () => {
+    if (editMode && fileInputRef.current) fileInputRef.current.click()
+  }
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setAvatarUploading(true)
+    const supabase = createClient()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) return
+    // Upload to Supabase Storage (bucket: 'avatars')
+    const fileExt = file.name.split('.').pop()
+    const filePath = `avatars/${user.id}_${Date.now()}.${fileExt}`
+    const { data, error } = await supabase.storage.from('avatars').upload(filePath, file, { upsert: true })
+    if (error) {
+      toast.error("Avatar upload failed: " + error.message)
+      setAvatarUploading(false)
+      return
+    }
+    // Get public URL
+    const { data: publicUrlData } = supabase.storage.from('avatars').getPublicUrl(filePath)
+    const avatarUrl = publicUrlData?.publicUrl
+    if (avatarUrl) {
+      setForm(f => ({ ...f, avatar_url: avatarUrl }))
+      // Update immediately in DB
+      await supabase.auth.updateUser({ data: { ...form, avatar_url: avatarUrl } })
+      setProfile(p => p ? { ...p, avatar_url: avatarUrl } : p)
+      toast.success("Avatar updated!")
+    }
+    setAvatarUploading(false)
   }
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
       <Card className="mb-8 shadow-2xl border-0 bg-gradient-to-br from-blue-50 to-indigo-100">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-3xl font-bold flex items-center gap-3">
-            <span role="img" aria-label="profile">👤</span> My Profile
-          </CardTitle>
+          <div className="flex items-center gap-4">
+            <div className="relative group cursor-pointer" onClick={handleAvatarClick} title={editMode ? "Click to change avatar" : undefined}>
+              <Avatar className="w-20 h-20 border-4 border-blue-200 shadow-lg">
+                <AvatarImage src={form.avatar_url || profile?.avatar_url || "/placeholder-user.jpg"} alt={profile?.full_name || "User"} />
+                <AvatarFallback>{profile?.full_name?.[0] || "U"}</AvatarFallback>
+              </Avatar>
+              {editMode && (
+                <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
+                  {avatarUploading ? "Uploading..." : "Edit"}
+                </div>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                className="hidden"
+                onChange={handleAvatarChange}
+                disabled={!editMode || avatarUploading}
+              />
+            </div>
+            <div>
+              <CardTitle className="text-3xl font-bold flex items-center gap-3">
+                <span role="img" aria-label="profile">👤</span> My Profile
+              </CardTitle>
+              <div className="text-gray-500 text-xs mt-1">{profile?.email}</div>
+            </div>
+          </div>
           {!editMode && (
             <Button variant="outline" onClick={handleEdit} className="hover:bg-blue-200">Edit</Button>
           )}
@@ -142,16 +222,6 @@ export default function ProfilePage() {
                     <span className="ml-2">{profile?.phone || "-"}</span>
                   )}
                 </div>
-              </div>
-              <div>
-                <div className="mb-4">
-                  <span className="font-semibold">Email:</span>
-                  {editMode ? (
-                    <Input name="email" value={profile?.email || "-"} readOnly className="mt-1 bg-gray-100 cursor-not-allowed" />
-                  ) : (
-                    <span className="ml-2">{profile?.email || "-"}</span>
-                  )}
-                </div>
                 <div className="mb-4">
                   <span className="font-semibold">City:</span>
                   {editMode ? (
@@ -159,6 +229,24 @@ export default function ProfilePage() {
                   ) : (
                     <span className="ml-2">{profile?.city || "-"}</span>
                   )}
+                </div>
+              </div>
+              <div>
+                <div className="mb-4">
+                  <span className="font-semibold">Email:</span>
+                  <span className="ml-2">{profile?.email || "-"}</span>
+                </div>
+                <div className="mb-4">
+                  <span className="font-semibold">Account Created:</span>
+                  <span className="ml-2">{profile?.created_at ? new Date(profile.created_at).toLocaleString() : "-"}</span>
+                </div>
+                <div className="mb-4">
+                  <span className="font-semibold">Last Sign In:</span>
+                  <span className="ml-2">{profile?.last_sign_in_at ? new Date(profile.last_sign_in_at).toLocaleString() : "-"}</span>
+                </div>
+                <div className="mb-4">
+                  <span className="font-semibold">Email Verified:</span>
+                  <span className="ml-2">{profile?.email_confirmed ? "Yes" : "No"}</span>
                 </div>
               </div>
             </div>

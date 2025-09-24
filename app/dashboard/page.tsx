@@ -2,8 +2,7 @@ import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-<<<<<<< HEAD
-import { Heart, Hospital, MapPin, Pill, Users, Calendar } from "lucide-react"
+import { Heart, Hospital, MapPin, Pill, Users, Calendar, Sparkles, TrendingUp, Award, Shield } from "lucide-react"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -11,9 +10,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu"
-=======
-import { Heart, Hospital, MapPin, Pill, Users, Calendar, Sparkles, TrendingUp, Award, Shield } from "lucide-react"
->>>>>>> c8ffa95e10faf42fff027dfa7bfb99e7f6e02398
 import Link from "next/link"
 
 export default async function DashboardPage() {
@@ -52,7 +48,6 @@ export default async function DashboardPage() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-<<<<<<< HEAD
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex items-center gap-2 px-3 py-1.5">
@@ -74,17 +69,6 @@ export default async function DashboardPage() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-=======
-            <div className="text-right">
-              <p className="text-sm font-medium text-gray-900">Welcome back!</p>
-              <p className="text-xs text-gray-600">{profile?.full_name || "User"}</p>
-            </div>
-            <form action="/auth/signout" method="post">
-              <Button variant="ghost" type="submit" className="text-gray-700 hover:text-red-600 hover:bg-red-50">
-                Sign Out
-              </Button>
-            </form>
->>>>>>> c8ffa95e10faf42fff027dfa7bfb99e7f6e02398
           </div>
         </div>
       </header>
@@ -273,6 +257,7 @@ export default async function DashboardPage() {
             </CardContent>
           </Card>
 
+          {/*
           {profile?.role === "admin" && (
             <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow bg-gradient-to-br from-indigo-600 to-purple-700 text-white">
               <CardHeader>
@@ -293,6 +278,7 @@ export default async function DashboardPage() {
               </CardContent>
             </Card>
           )}
+          */}
 
           <Card className="border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 bg-gradient-to-br from-white to-orange-50 group">
             <CardHeader>

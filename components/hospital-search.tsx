@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { MapPin, Phone, Mail, Star, Clock, Users, Navigation, Heart, Award, Shield } from "lucide-react"
+import { MapPin, Phone, Mail, Star, Clock, Users, Navigation, Heart, Award, Shield, Building2 } from "lucide-react"
 import Link from "next/link"
 
 interface HospitalSearchProps {
@@ -134,7 +134,7 @@ export default function HospitalSearch({ initialHospitals }: HospitalSearchProps
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-3">
                       <div className="bg-blue-100 p-2 rounded-lg">
-                        <Hospital className="h-6 w-6 text-blue-600" />
+                        <Building2 className="h-6 w-6 text-blue-600" />
                       </div>
                       <CardTitle className="text-xl text-gray-900 group-hover:text-blue-600 transition-colors">
                         {hospital.name}
@@ -184,7 +184,7 @@ export default function HospitalSearch({ initialHospitals }: HospitalSearchProps
                       Medical Specialties
                     </h4>
                     <div className="flex flex-wrap gap-2">
-                      {hospital.specialties.map((specialty) => (
+                      {(Array.isArray(hospital.specialties) ? hospital.specialties : []).map((specialty: string) => (
                         <Badge key={specialty} variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors">
                           {specialty}
                         </Badge>

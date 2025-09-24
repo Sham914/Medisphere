@@ -84,6 +84,7 @@ export default function BloodDonationNetwork({
         age: Number.parseInt(donorFormData.age),
         weight: Number.parseFloat(donorFormData.weight),
         is_available: true,
+        last_donation_date: donorFormData.last_donation_date || null,
       }
 
       if (donorProfile) {
