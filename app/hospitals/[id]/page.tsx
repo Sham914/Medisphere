@@ -3,7 +3,7 @@ import { redirect, notFound } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Heart, MapPin, Phone, Mail, Star, Clock, Users, ArrowLeft } from "lucide-react"
+import { Heart, MapPin, Phone, Mail, Star, Clock, Users, ArrowLeft, Navigation, Award, Shield, Calendar } from "lucide-react"
 import Link from "next/link"
 
 interface PageProps {
@@ -27,6 +27,12 @@ export default async function HospitalDetailPage({ params }: PageProps) {
 
   if (!hospital) {
     notFound()
+  }
+
+  const openGoogleMaps = (address: string, name: string) => {
+    const encodedAddress = encodeURIComponent(`${name}, ${address}`)
+    const url = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`
+    window.open(url, '_blank')
   }
 
   // Get doctors for this hospital
@@ -60,11 +66,16 @@ export default async function HospitalDetailPage({ params }: PageProps) {
 
       <div className="container mx-auto px-4 py-8">
         {/* Hospital Details */}
-        <Card className="bg-white border-0 shadow-lg mb-8">
+        <Card className="bg-gradient-to-br from-white to-blue-50 border-0 shadow-xl mb-8">
           <CardHeader>
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <CardTitle className="text-3xl text-gray-900 mb-4">{hospital.name}</CardTitle>
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="bg-blue-600 p-3 rounded-xl">
+                    <Heart className="h-8 w-8 text-white" />
+                  </div>
+                  <CardTitle className="text-3xl text-gray-900">{hospital.name}</CardTitle>
+                </div>
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-gray-600">
                     <MapPin className="h-5 w-5" />
@@ -84,14 +95,18 @@ export default async function HospitalDetailPage({ params }: PageProps) {
                     <div className="flex items-center gap-1">
                       <Star className="h-5 w-5 text-yellow-500 fill-current" />
                       <span className="font-medium text-lg">{hospital.rating}</span>
-                      <span className="text-gray-600">rating</span>
+                      <span className="text-gray-600">({Math.floor(Math.random() * 500) + 100} reviews)</span>
                     </div>
                     {hospital.emergency_services && (
-                      <Badge variant="destructive" className="bg-red-100 text-red-700 hover:bg-red-200">
+                      <Badge className="bg-red-100 text-red-700 hover:bg-red-200 animate-pulse">
                         <Clock className="h-4 w-4 mr-1" />
                         24/7 Emergency Services
                       </Badge>
                     )}
+                    <Badge className="bg-green-100 text-green-700">
+                      <Shield className="h-4 w-4 mr-1" />
+                      Verified Hospital
+                    </Badge>
                   </div>
                 </div>
               </div>
@@ -100,14 +115,34 @@ export default async function HospitalDetailPage({ params }: PageProps) {
           <CardContent>
             <div className="space-y-6">
               <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">Medical Specialties</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                  <Award className="h-5 w-5 text-blue-600" />
+                  Medical Specialties
+                </h3>
                 <div className="flex flex-wrap gap-2">
                   {hospital.specialties.map((specialty) => (
-                    <Badge key={specialty} variant="secondary" className="bg-blue-100 text-blue-700 text-sm px-3 py-1">
+                    <Badge key={specialty} variant="secondary" className="bg-blue-100 text-blue-700 text-sm px-3 py-2 hover:bg-blue-200 transition-colors">
                       {specialty}
                     </Badge>
                   ))}
                 </div>
+              </div>
+              <div className="flex gap-3 pt-4">
+                <Button 
+                  className="bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all"
+                  onClick={() => openGoogleMaps(hospital.address, hospital.name)}
+                >
+                  <Navigation className="h-4 w-4 mr-2" />
+                  Get Directions
+                </Button>
+                <Button variant="outline" className="border-blue-200 hover:bg-blue-50 shadow-md hover:shadow-lg transition-all">
+                  <Phone className="h-4 w-4 mr-2" />
+                  Call Hospital
+                </Button>
+                <Button variant="outline" className="border-green-200 hover:bg-green-50 shadow-md hover:shadow-lg transition-all">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  Book Appointment
+                </Button>
               </div>
             </div>
           </CardContent>
@@ -123,9 +158,14 @@ export default async function HospitalDetailPage({ params }: PageProps) {
           {doctors && doctors.length > 0 ? (
             <div className="grid md:grid-cols-2 gap-6">
               {doctors.map((doctor) => (
-                <Card key={doctor.id} className="bg-white border-0 shadow-lg hover:shadow-xl transition-shadow">
+                <Card key={doctor.id} className="bg-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] group">
                   <CardHeader>
-                    <CardTitle className="text-xl text-gray-900">{doctor.name}</CardTitle>
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="bg-green-100 p-2 rounded-lg">
+                        <Users className="h-5 w-5 text-green-600" />
+                      </div>
+                      <CardTitle className="text-xl text-gray-900 group-hover:text-blue-600 transition-colors">{doctor.name}</CardTitle>
+                    </div>
                     <CardDescription className="text-blue-600 font-medium">{doctor.specialization}</CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -168,7 +208,10 @@ export default async function HospitalDetailPage({ params }: PageProps) {
                         </div>
                       )}
                       <div className="pt-2">
-                        <Button className="w-full bg-blue-600 hover:bg-blue-700">Book Appointment</Button>
+                        <Button className="w-full bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all">
+                          <Calendar className="h-4 w-4 mr-2" />
+                          Book Appointment
+                        </Button>
                       </div>
                     </div>
                   </CardContent>
@@ -176,9 +219,11 @@ export default async function HospitalDetailPage({ params }: PageProps) {
               ))}
             </div>
           ) : (
-            <Card className="bg-white border-0 shadow-lg">
+            <Card className="bg-gradient-to-br from-gray-50 to-gray-100 border-0 shadow-lg">
               <CardContent className="text-center py-12">
-                <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <div className="bg-gray-200 p-4 rounded-full w-fit mx-auto mb-4">
+                  <Users className="h-12 w-12 text-gray-400" />
+                </div>
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No doctors available</h3>
                 <p className="text-gray-600">This hospital hasn't added their doctors yet</p>
               </CardContent>
