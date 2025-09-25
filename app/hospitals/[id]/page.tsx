@@ -6,8 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Heart, MapPin, Phone, Mail, Star, Clock, Users, ArrowLeft, Award, Shield } from "lucide-react"
 import Link from "next/link"
 
-import dynamic from "next/dynamic"
-const HospitalActions = dynamic(() => import("@/components/hospital-actions"), { ssr: false })
+import HospitalActionsClient from "@/components/HospitalActionsClient"
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -128,7 +127,7 @@ export default async function HospitalDetailPage({ params }: PageProps) {
                   ))}
                 </div>
               </div>
-              <HospitalActions address={hospital.address} name={hospital.name} phone={hospital.phone} />
+              <HospitalActionsClient address={hospital.address} name={hospital.name} phone={hospital.phone} />
             </div>
           </CardContent>
         </Card>
