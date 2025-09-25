@@ -50,7 +50,7 @@ export default async function MedicalStoresPage() {
           <p className="text-gray-600">Locate nearby pharmacies and medical stores</p>
         </div>
 
-        <MedicalStoreSearch initialStores={medicalStores || []} />
+  <MedicalStoreSearch />
       </div>
     </div>
   )

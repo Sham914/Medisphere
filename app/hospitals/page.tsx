@@ -5,6 +5,9 @@ import { Heart } from "lucide-react"
 import Link from "next/link"
 import Button from "@/components/ui/button"
 
+
+import { cookies } from "next/headers"
+
 export default async function HospitalsPage() {
   const supabase = await createClient()
 
@@ -16,13 +19,7 @@ export default async function HospitalsPage() {
     redirect("/auth/login")
   }
 
-  // Get initial hospitals data
-  const { data: hospitals, error: hospitalsError } = await supabase
-    .from("hospitals")
-    .select("*")
-    .order("rating", { ascending: false })
-    .limit(20)
-console.log(hospitals,hospitalsError)
+  // Only fetch user for auth, let client fetch hospitals by city
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Header */}
@@ -50,7 +47,7 @@ console.log(hospitals,hospitalsError)
           <p className="text-gray-600">Search for healthcare providers near you</p>
         </div>
 
-        <HospitalSearch initialHospitals={hospitals || []} />
+  <HospitalSearch />
       </div>
     </div>
   )

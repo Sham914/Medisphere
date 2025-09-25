@@ -8,22 +8,24 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { MapPin, Phone, Mail, Star, Clock, Shield, Navigation, Pill, Award, CheckCircle } from "lucide-react"
 import Link from "next/link"
+import { useCity } from "@/hooks/city-context"
 
 
-interface MedicalStoreSearchProps {
-  initialStores: any[]
-}
 
-export default function MedicalStoreSearch({ initialStores }: MedicalStoreSearchProps) {
-  const [stores, setStores] = useState<any[]>(initialStores)
+
+export default function MedicalStoreSearch() {
+  const [stores, setStores] = useState<any[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-
+  const { city } = useCity()
   const supabase = createClient()
 
   const searchStores = async () => {
     setIsLoading(true)
     let query = supabase.from("medical_stores").select("*")
+
+    // Filter by city
+    query = query.eq("city", city)
 
     if (searchTerm) {
       query = query.or(`name.ilike.%${searchTerm}%,address.ilike.%${searchTerm}%`)
@@ -40,7 +42,7 @@ export default function MedicalStoreSearch({ initialStores }: MedicalStoreSearch
       searchStores()
     }, 300)
     return () => clearTimeout(debounceTimer)
-  }, [searchTerm])
+  }, [searchTerm, city]) // add city to dependencies
 
   const getOperatingStatus = (operatingHours: string) => {
     if (operatingHours === "24/7") {

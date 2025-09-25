@@ -6,21 +6,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { useCity } from "@/hooks/city-context"
+import { Heart, MapPin, Phone, Mail, Star, Clock, Users, Navigation, Award, Shield, Building2 } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { MapPin, Phone, Mail, Star, Clock, Users, Navigation, Heart, Award, Shield, Building2 } from "lucide-react"
 import Link from "next/link"
 
-interface HospitalSearchProps {
-  initialHospitals: any[]
-}
 
-export default function HospitalSearch({ initialHospitals }: HospitalSearchProps) {
-  const [hospitals, setHospitals] = useState<any[]>(initialHospitals)
+export default function HospitalSearch() {
+  const [hospitals, setHospitals] = useState<any[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedSpecialty, setSelectedSpecialty] = useState("all")
   const [emergencyOnly, setEmergencyOnly] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-
   const supabase = createClient()
 
   const specialties = [
@@ -34,12 +31,17 @@ export default function HospitalSearch({ initialHospitals }: HospitalSearchProps
     "Gynecology",
     "Internal Medicine",
     "Radiology",
+    "Infertility",
+    "General Medicine",
   ]
-
+  
+  const { city } = useCity()
   const searchHospitals = async () => {
     setIsLoading(true)
-
     let query = supabase.from("hospitals").select("*")
+
+    // Filter by city
+    query = query.eq("city", city)
 
     if (searchTerm) {
       query = query.or(`name.ilike.%${searchTerm}%,address.ilike.%${searchTerm}%`)
@@ -62,9 +64,8 @@ export default function HospitalSearch({ initialHospitals }: HospitalSearchProps
     const debounceTimer = setTimeout(() => {
       searchHospitals()
     }, 300)
-
     return () => clearTimeout(debounceTimer)
-  }, [searchTerm, selectedSpecialty, emergencyOnly])
+  }, [searchTerm, selectedSpecialty, emergencyOnly, city])
 
   const openGoogleMaps = (address: string, name: string) => {
     const encodedAddress = encodeURIComponent(`${name}, ${address}`)
