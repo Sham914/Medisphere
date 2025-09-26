@@ -2,6 +2,8 @@
 import { useCity } from "@/hooks/city-context"
 import Image from "next/image"
 import { FaHospital, FaUserMd, FaCapsules, FaHeart, FaMapMarkerAlt } from "react-icons/fa"
+import { useEffect, useState } from "react"
+import { createClient } from "@/lib/supabase/client"
 import { MdLocalPharmacy } from "react-icons/md"
 import { IoMdMedkit } from "react-icons/io"
 
@@ -16,31 +18,57 @@ import Link from "next/link"
 
 export default function DashboardContent({ profile }: { profile: any }) {
   const { city, setCity, cities } = useCity()
+  const [counts, setCounts] = useState({
+    hospitals: 0,
+    doctors: 0,
+    pharmacies: 0,
+    donors: 0,
+  })
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+      const supabase = createClient()
+      const [hospitalsRes, doctorsRes, pharmaciesRes, donorsRes] = await Promise.all([
+        supabase.from("hospitals").select("id", { count: "exact", head: true }),
+        supabase.from("doctors").select("id", { count: "exact", head: true }),
+        supabase.from("medical_stores").select("id", { count: "exact", head: true }),
+        supabase.from("blood_donors").select("id", { count: "exact", head: true })
+      ])
+      setCounts({
+        hospitals: hospitalsRes.count ?? 0,
+        doctors: doctorsRes.count ?? 0,
+        pharmacies: pharmaciesRes.count ?? 0,
+        donors: donorsRes.count ?? 0,
+      })
+    }
+    fetchCounts()
+  }, [])
+
   const stats = [
     {
       label: "Hospitals",
-      value: "150+",
+      value: counts.hospitals,
       icon: <FaHospital size={32} className="text-blue-600" />,
       color: "bg-blue-50",
       text: "text-blue-700",
     },
     {
       label: "Doctors",
-      value: "500+",
+      value: counts.doctors,
       icon: <FaUserMd size={32} className="text-green-600" />,
       color: "bg-green-50",
       text: "text-green-700",
     },
     {
       label: "Pharmacies",
-      value: "200+",
+      value: counts.pharmacies,
       icon: <MdLocalPharmacy size={32} className="text-purple-600" />,
       color: "bg-purple-50",
       text: "text-purple-700",
     },
     {
       label: "Donors",
-      value: "1000+",
+      value: counts.donors,
       icon: <FaHeart size={32} className="text-red-600" />,
       color: "bg-red-50",
       text: "text-red-700",
