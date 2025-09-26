@@ -10,8 +10,8 @@ export default function HomePage() {
       <header className="bg-white/90 backdrop-blur-md border-b border-blue-200 sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-2 rounded-lg shadow-lg">
-              <Heart className="h-6 w-6 text-white" />
+            <div className="p-2 rounded-lg shadow-lg">
+              <img src="/main-logo.png" alt="Medisphere Logo" className="h-8 w-8 object-cover rounded-lg" style={{objectPosition: 'center', border: '2px solid #2563eb'}} />
             </div>
             <div>
               <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
@@ -254,8 +254,8 @@ export default function HomePage() {
       <footer className="bg-gray-900 text-white py-12">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center gap-2 mb-8">
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-2 rounded-lg shadow-lg">
-              <Heart className="h-6 w-6 text-white" />
+            <div className="p-2 rounded-lg shadow-lg">
+              <img src="/main-logo.png" alt="Medisphere Logo" className="h-8 w-8 object-cover rounded-lg" style={{objectPosition: 'center', border: '2px solid #2563eb'}} />
             </div>
             <div>
               <h1 className="text-2xl font-bold">Medisphere</h1>

@@ -70,8 +70,8 @@ export default async function HospitalDetailPage({ params }: PageProps) {
       <header className="bg-white/80 backdrop-blur-sm border-b border-blue-200 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="bg-blue-600 p-2 rounded-lg">
-              <Heart className="h-6 w-6 text-white" />
+            <div className="p-2 rounded-lg">
+              <img src="/main-logo.png" alt="Medisphere Logo" className="h-8 w-8 object-cover rounded-lg" style={{objectPosition: 'center', border: '2px solid #2563eb'}} />
             </div>
             <h1 className="text-2xl font-bold text-gray-900">Medisphere</h1>
           </div>

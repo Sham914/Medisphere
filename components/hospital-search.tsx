@@ -79,8 +79,8 @@ export default function HospitalSearch() {
       <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-0 shadow-xl">
         <CardHeader>
           <CardTitle className="flex items-center gap-3">
-            <div className="bg-blue-600 p-2 rounded-lg">
-              <Heart className="h-6 w-6 text-white" />
+            <div className="p-2 rounded-lg">
+              <img src="/main-logo.png" alt="Medisphere Logo" className="h-8 w-8 object-cover rounded-lg" style={{objectPosition: 'center', border: '2px solid #2563eb'}} />
             </div>
             Search Hospitals
           </CardTitle>

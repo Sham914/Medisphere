@@ -69,8 +69,8 @@ export default function RegisterPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="bg-blue-600 p-2 rounded-lg">
-              <Heart className="h-6 w-6 text-white" />
+            <div className="p-2 rounded-lg">
+              <img src="/main-logo.png" alt="Medisphere Logo" className="h-8 w-8 object-cover rounded-lg" style={{objectPosition: 'center', border: '2px solid #2563eb'}} />
             </div>
             <h1 className="text-2xl font-bold text-gray-900">Medisphere</h1>
           </div>
