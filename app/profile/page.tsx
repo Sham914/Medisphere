@@ -47,15 +47,14 @@ export default function ProfilePage() {
     const fetchData = async () => {
       setLoading(true)
       const supabase = createClient()
-      const {
-        data: { user },
-        error: userError,
-      } = await supabase.auth.getUser()
+      const [{ data: userData, error: userError }] = await Promise.all([
+        supabase.auth.getUser()
+      ])
+      const user = userData?.user
       if (userError || !user) {
         window.location.href = "/auth/login"
         return
       }
-      // Profile from auth.users
       const meta = user.user_metadata || {}
       const profileData: Profile = {
         full_name: meta.full_name || user.email?.split("@")[0] || "User",
@@ -67,6 +66,18 @@ export default function ProfilePage() {
         last_sign_in_at: user.last_sign_in_at,
         email_confirmed: user.email_confirmed_at ? true : false,
       }
+      // Fetch reminders and blood info in parallel
+      const [remindersRes, bloodRes] = await Promise.all([
+        supabase
+          .from("medicine_reminders")
+          .select("medicine_name, dosage, frequency, start_date, end_date, reminder_times, notes, is_active")
+          .eq("user_id", user.id),
+        supabase
+          .from("blood_donors")
+          .select("blood_type, last_donation_date, is_available")
+          .eq("user_id", user.id)
+          .single()
+      ])
       setProfile(profileData)
       setForm({
         full_name: profileData.full_name,
@@ -74,19 +85,8 @@ export default function ProfilePage() {
         city: profileData.city || "",
         avatar_url: profileData.avatar_url || "",
       })
-      // Reminders
-      const { data: remindersData } = await supabase
-        .from("medicine_reminders")
-        .select("medicine_name, dosage, frequency, start_date, end_date, reminder_times, notes, is_active")
-        .eq("user_id", user.id)
-      setReminders(remindersData || [])
-      // Blood
-      const { data: bloodData } = await supabase
-        .from("blood_donors")
-        .select("blood_type, last_donation_date, is_available")
-        .eq("user_id", user.id)
-        .single()
-      setBlood(bloodData)
+      setReminders(remindersRes.data || [])
+      setBlood(bloodRes.data)
       setLoading(false)
     }
     fetchData()
@@ -167,6 +167,11 @@ export default function ProfilePage() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
+      <div className="mb-4">
+        <Button variant="outline" onClick={() => window.history.back()} className="flex items-center gap-2">
+          <span className="text-lg">←</span> Back
+        </Button>
+      </div>
       <Card className="mb-8 shadow-2xl border-0 bg-gradient-to-br from-blue-50 to-indigo-100">
         <CardHeader className="flex flex-row items-center justify-between">
           <div className="flex items-center gap-4">
