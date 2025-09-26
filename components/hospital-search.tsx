@@ -20,7 +20,7 @@ export default function HospitalSearch() {
   const [isLoading, setIsLoading] = useState(false)
   const supabase = createClient()
 
-  const specialties = [
+  const specialities = [
     "Cardiology",
     "Emergency",
     "Surgery",
@@ -48,7 +48,7 @@ export default function HospitalSearch() {
     }
 
     if (selectedSpecialty !== "all") {
-      query = query.contains("specialties", [selectedSpecialty])
+      query = query.contains("specialities", [selectedSpecialty])
     }
 
     if (emergencyOnly) {
@@ -100,8 +100,8 @@ export default function HospitalSearch() {
                 <SelectValue placeholder="Select specialty" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Specialties</SelectItem>
-                {specialties.map((specialty) => (
+                <SelectItem value="all">All Specialities</SelectItem>
+                {specialities.map((specialty) => (
                   <SelectItem key={specialty} value={specialty}>
                     {specialty}
                   </SelectItem>
@@ -182,14 +182,37 @@ export default function HospitalSearch() {
                   <div>
                     <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
                       <Award className="h-4 w-4 text-blue-600" />
-                      Medical Specialties
+                      Medical Specialities
                     </h4>
                     <div className="flex flex-wrap gap-2">
-                      {(Array.isArray(hospital.specialties) ? hospital.specialties : []).map((specialty: string) => (
-                        <Badge key={specialty} variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors">
-                          {specialty}
-                        </Badge>
-                      ))}
+                      {(() => {
+                        let specialities: string[] = [];
+                        const raw = hospital.specialities;
+                        // Debug log for troubleshooting
+                        console.log('Hospital:', hospital.name, 'Specialities raw value:', raw);
+                        if (Array.isArray(raw)) {
+                          specialities = raw;
+                        } else if (typeof raw === "string") {
+                          if (raw.startsWith("{") && raw.endsWith("}")) {
+                            specialities = raw.slice(1, -1).split(",").map((s: string) => s.trim()).filter(Boolean);
+                          } else {
+                            try {
+                              const parsed = JSON.parse(raw);
+                              if (Array.isArray(parsed)) specialities = parsed;
+                            } catch {
+                              specialities = raw.split(",").map((s: string) => s.trim()).filter(Boolean);
+                            }
+                          }
+                        }
+                        if (specialities.length === 0) {
+                          return <span className="text-gray-500 text-sm">No specialities listed</span>;
+                        }
+                        return specialities.map((specialty: string) => (
+                          <Badge key={specialty} variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors">
+                            {specialty}
+                          </Badge>
+                        ));
+                      })()}
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-3 pt-2">

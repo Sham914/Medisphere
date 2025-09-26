@@ -30,7 +30,7 @@ export async function createHospital(hospitalData: {
   address: string
   phone: string
   email: string
-  specialties: string[]
+  specialities: string[]
   emergency_services: boolean
   rating: number
   latitude?: number
@@ -55,7 +55,7 @@ export async function updateHospital(
     address: string
     phone: string
     email: string
-    specialties: string[]
+    specialities: string[]
     emergency_services: boolean
     rating: number
     latitude?: number

@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS public.hospitals (
   address TEXT NOT NULL,
   phone TEXT NOT NULL,
   email TEXT,
-  specialties TEXT[],
+  specialities TEXT[],
   emergency_services BOOLEAN DEFAULT false,
   latitude DECIMAL(10, 8),
   longitude DECIMAL(11, 8),

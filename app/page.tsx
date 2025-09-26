@@ -102,7 +102,7 @@ export default function HomePage() {
                 Hospital & Doctor Network
               </CardTitle>
               <CardDescription>
-                Find nearby hospitals and connect with qualified doctors across all specialties
+                Find nearby hospitals and connect with qualified doctors across all specialities
               </CardDescription>
             </CardHeader>
             <CardContent>

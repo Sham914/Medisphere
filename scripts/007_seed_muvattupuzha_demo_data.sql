@@ -1,7 +1,7 @@
 -- Seed data for Muvattupuzha city hospitals, doctors, and medical stores
 
 -- Hospitals
-INSERT INTO public.hospitals (name, address, phone, email, specialties, emergency_services, latitude, longitude, rating) VALUES
+INSERT INTO public.hospitals (name, address, phone, email, specialities, emergency_services, latitude, longitude, rating) VALUES
 ('Muvattupuzha General Hospital', 'Main Road, Muvattupuzha, Ernakulam, Kerala', '+91-484-1234567', 'contact@muvattupuzhahospital.com', ARRAY['Cardiology', 'Emergency', 'Surgery', 'Pediatrics'], true, 9.9770, 76.5762, 4.4),
 ('St. Marys Hospital', 'Market Junction, Muvattupuzha, Ernakulam, Kerala', '+91-484-2345678', 'info@stmaryshospital.com', ARRAY['Gynecology', 'Orthopedics', 'Neurology'], true, 9.9785, 76.5775, 4.3),
 ('Holy Family Hospital', 'Kottayam Road, Muvattupuzha, Ernakulam, Kerala', '+91-484-3456789', 'info@holyfamilyhospital.com', ARRAY['Dermatology', 'Internal Medicine', 'Radiology'], false, 9.9750, 76.5790, 4.1),

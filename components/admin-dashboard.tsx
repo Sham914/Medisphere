@@ -68,7 +68,7 @@ export default function AdminDashboard({ stats: initialStats, recentData: initia
     address: "",
     phone: "",
     email: "",
-    specialties: "",
+    specialities: "",
     emergency_services: false,
   })
 
@@ -162,7 +162,7 @@ export default function AdminDashboard({ stats: initialStats, recentData: initia
     }
   }
 
-  const specialties = [
+  const specialities = [
     "Cardiology",
     "Emergency",
     "Surgery",
@@ -183,7 +183,7 @@ export default function AdminDashboard({ stats: initialStats, recentData: initia
       address: "",
       phone: "",
       email: "",
-      specialties: "",
+      specialities: "",
       emergency_services: false,
     })
     setDoctorFormData({
@@ -216,7 +216,7 @@ export default function AdminDashboard({ stats: initialStats, recentData: initia
     try {
       const hospitalData = {
         ...hospitalFormData,
-        specialties: hospitalFormData.specialties.split(",").map((s) => s.trim()),
+        specialities: hospitalFormData.specialities.split(",").map((s) => s.trim()),
         rating: 0,
       }
 
@@ -352,7 +352,7 @@ export default function AdminDashboard({ stats: initialStats, recentData: initia
         address: item.address,
         phone: item.phone,
         email: item.email || "",
-        specialties: item.specialties.join(", "),
+        specialities: item.specialities.join(", "),
         emergency_services: item.emergency_services,
       })
       setIsHospitalDialogOpen(true)
@@ -548,12 +548,12 @@ export default function AdminDashboard({ stats: initialStats, recentData: initia
                     />
                   </div>
                   <div>
-                    <Label>Specialties</Label>
+                    <Label>specialities</Label>
                     <Input
-                      id="specialties"
-                      value={hospitalFormData.specialties}
-                      onChange={(e) => setHospitalFormData((prev) => ({ ...prev, specialties: e.target.value }))}
-                      placeholder="Enter specialties separated by commas"
+                      id="specialities"
+                      value={hospitalFormData.specialities}
+                      onChange={(e) => setHospitalFormData((prev) => ({ ...prev, specialities: e.target.value }))}
+                      placeholder="Enter specialities separated by commas"
                       required
                     />
                   </div>
@@ -696,7 +696,7 @@ export default function AdminDashboard({ stats: initialStats, recentData: initia
                         <SelectValue placeholder="Select specialization" />
                       </SelectTrigger>
                       <SelectContent>
-                        {specialties.map((specialty) => (
+                        {specialities.map((specialty) => (
                           <SelectItem key={specialty} value={specialty}>
                             {specialty}
                           </SelectItem>

@@ -27,8 +27,30 @@ export default async function HospitalDetailPage({ params }: PageProps) {
   // Get hospital details
   const { data: hospital } = await supabase.from("hospitals").select("*").eq("id", id).single()
 
-  // Type assertions for specialties and available_days
-  const specialties: string[] = Array.isArray(hospital?.specialties) ? hospital.specialties : []
+  // Robust parsing for specialities field
+  let specialities: string[] = [];
+  console.log('specialities raw value:', hospital?.specialities);
+  if (Array.isArray(hospital?.specialities)) {
+    specialities = hospital.specialities;
+  } else if (typeof hospital?.specialities === "string") {
+    // Handle Postgres array syntax: {item1,item2,...}
+    if (hospital.specialities.startsWith("{") && hospital.specialities.endsWith("}")) {
+      specialities = hospital.specialities
+        .slice(1, -1)
+        .split(",")
+        .map((s: string) => s.trim())
+        .filter(Boolean);
+    } else {
+      try {
+        const parsed = JSON.parse(hospital.specialities);
+        if (Array.isArray(parsed)) {
+          specialities = parsed;
+        }
+      } catch {
+        specialities = hospital.specialities.split(",").map((s: string) => s.trim()).filter(Boolean);
+      }
+    }
+  }
 
   if (!hospital) {
     notFound()
@@ -117,14 +139,18 @@ export default async function HospitalDetailPage({ params }: PageProps) {
               <div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3 flex items-center gap-2">
                   <Award className="h-5 w-5 text-blue-600" />
-                  Medical Specialties
+                  Medical specialities
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                  {specialties.map((specialty: string) => (
-                    <Badge key={specialty} variant="secondary" className="bg-blue-100 text-blue-700 text-sm px-3 py-2 hover:bg-blue-200 transition-colors">
-                      {specialty}
-                    </Badge>
-                  ))}
+                  {specialities.length > 0 ? (
+                    specialities.map((specialty: string) => (
+                      <Badge key={specialty} variant="secondary" className="bg-blue-100 text-blue-700 text-sm px-3 py-2 hover:bg-blue-200 transition-colors">
+                        {specialty}
+                      </Badge>
+                    ))
+                  ) : (
+                    <span className="text-gray-500 text-sm">No specialities listed</span>
+                  )}
                 </div>
               </div>
               <HospitalActionsClient address={hospital.address} name={hospital.name} phone={hospital.phone} />
@@ -164,7 +190,7 @@ export default async function HospitalDetailPage({ params }: PageProps) {
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-gray-600">Consultation Fee:</span>
-                        <span className="font-medium text-green-600">${doctor.consultation_fee}</span>
+                        <span className="font-medium text-green-600">₹{doctor.consultation_fee}</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-gray-600">Rating:</span>
