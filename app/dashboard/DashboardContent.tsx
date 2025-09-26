@@ -1,6 +1,10 @@
 "use client"
 import { useCity } from "@/hooks/city-context"
-import { Heart, Hospital, MapPin, Pill, Users, Calendar, Sparkles, TrendingUp, Award, Shield } from "lucide-react"
+import Image from "next/image"
+import { FaHospital, FaUserMd, FaCapsules, FaHeart, FaMapMarkerAlt } from "react-icons/fa"
+import { MdLocalPharmacy } from "react-icons/md"
+import { IoMdMedkit } from "react-icons/io"
+
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -9,11 +13,95 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu"
 import Link from "next/link"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 
 export default function DashboardContent({ profile }: { profile: any }) {
   const { city, setCity, cities } = useCity()
+  const stats = [
+    {
+      label: "Hospitals",
+      value: "150+",
+      icon: <FaHospital size={32} className="text-blue-600" />,
+      color: "bg-blue-50",
+      text: "text-blue-700",
+    },
+    {
+      label: "Doctors",
+      value: "500+",
+      icon: <FaUserMd size={32} className="text-green-600" />,
+      color: "bg-green-50",
+      text: "text-green-700",
+    },
+    {
+      label: "Pharmacies",
+      value: "200+",
+      icon: <MdLocalPharmacy size={32} className="text-purple-600" />,
+      color: "bg-purple-50",
+      text: "text-purple-700",
+    },
+    {
+      label: "Donors",
+      value: "1000+",
+      icon: <FaHeart size={32} className="text-red-600" />,
+      color: "bg-red-50",
+      text: "text-red-700",
+    },
+  ]
+
+  const cards = [
+    {
+      title: "Find Hospitals & Doctors",
+      description: "Search for nearby hospitals and connect with qualified doctors",
+      icon: <FaHospital size={28} className="text-blue-600" />,
+      badge: "Verified Healthcare Providers",
+      badgeColor: "text-green-600",
+      button: {
+        label: "Explore Hospitals",
+        href: "/hospitals",
+        color: "bg-blue-600 hover:bg-blue-700",
+        icon: <FaHospital size={18} />,
+      },
+    },
+    {
+      title: "Medical Stores",
+      description: "Locate nearby pharmacies and medical stores",
+      icon: <FaMapMarkerAlt size={28} className="text-green-600" />,
+      badge: "Licensed Pharmacies",
+      badgeColor: "text-green-600",
+      button: {
+        label: "Find Pharmacies",
+        href: "/medical-stores",
+        color: "bg-green-600 hover:bg-green-700",
+        icon: <MdLocalPharmacy size={18} />,
+      },
+    },
+    {
+      title: "Medicine Reminders",
+      description: "Manage your medication schedule and reminders",
+      icon: <FaCapsules size={28} className="text-purple-600" />,
+      badge: "Smart & Secure",
+      badgeColor: "text-green-600",
+      button: {
+        label: "Manage Reminders",
+        href: "/reminders",
+        color: "bg-purple-600 hover:bg-purple-700",
+        icon: <FaCapsules size={18} />,
+      },
+    },
+    {
+      title: "Blood Donation Network",
+      description: "Connect with donors and requests",
+      icon: <FaHeart size={28} className="text-red-600" />,
+      badge: "Verified Donors",
+      badgeColor: "text-red-600",
+      button: {
+        label: "Blood Donation",
+        href: "/blood-donation",
+        color: "bg-red-600 hover:bg-red-700",
+        icon: <FaHeart size={18} />,
+      },
+    },
+  ]
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100">
       {/* Header */}
@@ -44,13 +132,13 @@ export default function DashboardContent({ profile }: { profile: any }) {
             </select>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center gap-2 px-3 py-1.5">
+                <button className="flex items-center gap-2 px-3 py-1.5 bg-white rounded shadow hover:bg-blue-50">
                   <Avatar>
                     <AvatarImage src={profile.avatar_url} alt={profile.full_name} />
                     <AvatarFallback>{profile.full_name?.[0] || "U"}</AvatarFallback>
                   </Avatar>
                   <span className="font-medium text-gray-900">Hi, {profile.full_name}</span>
-                </Button>
+                </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem asChild>
@@ -67,100 +155,46 @@ export default function DashboardContent({ profile }: { profile: any }) {
         </div>
       </header>
       <div className="container mx-auto px-4 py-8">
-        {/* Welcome Section */}
+        {/* Hero Section */}
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome, {profile.full_name}!</h2>
           <p className="text-gray-600">Your personalized healthcare dashboard. Select your city to see local hospitals, stores, and more.</p>
         </div>
-
-        {/* Quick Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
-          <Card className="bg-gradient-to-br from-blue-100 to-indigo-100 border-0 shadow-lg">
-            <CardHeader className="flex items-center gap-2">
-              <Hospital className="h-6 w-6 text-blue-600" />
-              <CardTitle>Hospitals</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <span className="text-2xl font-bold text-blue-700">Explore</span>
-            </CardContent>
-          </Card>
-          <Card className="bg-gradient-to-br from-green-100 to-emerald-100 border-0 shadow-lg">
-            <CardHeader className="flex items-center gap-2">
-              <Pill className="h-6 w-6 text-green-600" />
-              <CardTitle>Medical Stores</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <span className="text-2xl font-bold text-green-700">Find</span>
-            </CardContent>
-          </Card>
-          <Card className="bg-gradient-to-br from-purple-100 to-indigo-100 border-0 shadow-lg">
-            <CardHeader className="flex items-center gap-2">
-              <Users className="h-6 w-6 text-purple-600" />
-              <CardTitle>Doctors</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <span className="text-2xl font-bold text-purple-700">Browse</span>
-            </CardContent>
-          </Card>
-          <Card className="bg-gradient-to-br from-pink-100 to-red-100 border-0 shadow-lg">
-            <CardHeader className="flex items-center gap-2">
-              <Calendar className="h-6 w-6 text-pink-600" />
-              <CardTitle>Reminders</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <span className="text-2xl font-bold text-pink-700">Manage</span>
-            </CardContent>
-          </Card>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {stats.map((stat, idx) => (
+            <div key={stat.label + idx} className={`rounded-2xl shadow-sm p-6 flex items-center gap-4 ${stat.color}`}>
+              <div>{stat.icon}</div>
+              <div>
+                <div className={`text-2xl font-bold ${stat.text}`}>{stat.value}</div>
+                <div className="text-gray-600 font-medium">{stat.label}</div>
+              </div>
+              <span className="ml-auto text-green-500 font-bold text-lg">↗</span>
+            </div>
+          ))}
         </div>
-
-        {/* Main Services */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <Card className="bg-white border-0 shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader>
-              <CardTitle className="text-xl text-gray-900">Find Hospitals</CardTitle>
-              <CardDescription>Search for hospitals in your city</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Link href="/hospitals">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white w-full h-12 text-lg font-semibold">Search Hospitals</Button>
-              </Link>
-            </CardContent>
-          </Card>
-          <Card className="bg-white border-0 shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader>
-              <CardTitle className="text-xl text-gray-900">Find Medical Stores</CardTitle>
-              <CardDescription>Locate pharmacies and stores nearby</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Link href="/medical-stores">
-                <Button className="bg-green-600 hover:bg-green-700 text-white w-full h-12 text-lg font-semibold">Search Stores</Button>
-              </Link>
-            </CardContent>
-          </Card>
-          <Card className="bg-white border-0 shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader>
-              <CardTitle className="text-xl text-gray-900">Blood Donation Network</CardTitle>
-              <CardDescription>Connect with donors and requests</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Link href="/blood-donation">
-                <Button className="bg-red-600 hover:bg-red-700 text-white w-full h-12 text-lg font-semibold">Blood Donation</Button>
-              </Link>
-            </CardContent>
-          </Card>
-          <Card className="bg-white border-0 shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader>
-              <CardTitle className="text-xl text-gray-900">Medicine Reminders</CardTitle>
-              <CardDescription>Never miss a dose again</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Link href="/reminders">
-                <Button className="bg-purple-600 hover:bg-purple-700 text-white w-full h-12 text-lg font-semibold">Reminders</Button>
-              </Link>
-            </CardContent>
-          </Card>
+        {/* Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+          {cards.map((card, idx) => (
+            <div key={card.title + idx} className="rounded-2xl shadow-md p-6 bg-white flex flex-col justify-between min-h-[220px]">
+              <div className="flex items-center gap-3 mb-2">
+                {card.icon}
+                <h2 className="text-xl font-semibold">{card.title}</h2>
+              </div>
+              <p className="text-gray-600 mb-2">{card.description}</p>
+              <div className={`mb-4 font-medium ${card.badgeColor} flex items-center gap-2`}>
+                <span className="inline-block bg-green-100 rounded px-2 py-1 text-xs font-semibold">{card.badge}</span>
+              </div>
+              <a href={card.button.href} className={`mt-auto w-full flex items-center justify-center gap-2 text-white font-semibold py-2 rounded-xl transition ${card.button.color}`}
+                style={{ textDecoration: "none" }}>
+                {card.button.icon}
+                {card.button.label}
+              </a>
+            </div>
+          ))}
         </div>
       </div>
     </div>
   )
 }
+
