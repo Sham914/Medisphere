@@ -762,11 +762,16 @@ export default function BloodDonationNetwork({
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="flex gap-2">
-                      <Button size="sm" className="bg-red-600 hover:bg-red-700">
-                        <Phone className="h-4 w-4 mr-2" />
-                        Contact Donor
-                      </Button>
+                    <div className="flex flex-col gap-2">
+                      <div className="text-sm text-gray-700 mt-2 mb-1">
+                        <span className="font-semibold">Medical Conditions:</span> {donor.medical_conditions?.trim() ? donor.medical_conditions : "nothing concerning"}
+                      </div>
+                      <div className="flex gap-2">
+                        <Button size="sm" className="bg-red-600 hover:bg-red-700">
+                          <Phone className="h-4 w-4 mr-2" />
+                          Contact Donor
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
