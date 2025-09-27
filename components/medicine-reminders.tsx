@@ -2,7 +2,9 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
+// Path to the SOS beep sound (only .wav supported for now)
+const SOS_BEEP_URL = "/sos-beep.wav"
 import { createClient } from "@/lib/supabase/client"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -28,7 +30,117 @@ interface MedicineRemindersProps {
 }
 
 export default function MedicineReminders({ initialReminders, userId }: MedicineRemindersProps) {
+  // SOS Alert State (must be after reminders is declared)
+  const [alertsEnabled, setAlertsEnabled] = useState(false)
+  // Handler to unlock audio on user gesture
+  const handleEnableAlerts = () => {
+    if (!alertsEnabled) {
+      const audio = new window.Audio(SOS_BEEP_URL)
+      audio.play().then(() => {
+        audio.pause()
+        setAlertsEnabled(true)
+      }).catch(() => {
+        setAlertsEnabled(true)
+      })
+    }
+  }
   const [reminders, setReminders] = useState<any[]>(initialReminders)
+  // SOS Alert State (must be after reminders is declared)
+  const [sosAlert, setSosAlert] = useState<{ medicine: string; time: string } | null>(null)
+  /*const sosAudioRef = useRef<HTMLAudioElement | null>(null)
+  const sosTimeoutRef = useRef<NodeJS.Timeout | null>(null)*/
+  // SOS Alert Effect: check every second for pill time
+  // Prevent repeated alerts for the same medicine/time after dismiss
+  const lastDismissedRef = useRef<{ medicine: string; time: string; minute: string } | null>(null)
+  useEffect(() => {
+    if (!alertsEnabled) return
+    const interval = setInterval(() => {
+      const now = new Date()
+      const hhmm = `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`
+      // Only alert if not already showing and not just dismissed for this medicine/time/minute
+      if (!sosAlert) {
+        for (const reminder of getTodaysReminders()) {
+          for (const time of reminder.reminder_times) {
+            if (time.slice(0,5) === hhmm) {
+              const last = lastDismissedRef.current
+              if (last && last.medicine === reminder.medicine_name && last.time === time && last.minute === hhmm) {
+                continue // skip this alert for this minute
+              }
+              setSosAlert({ medicine: reminder.medicine_name, time })
+              return
+            }
+          }
+        }
+      }
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [reminders, sosAlert, alertsEnabled])
+
+  // Play SOS beep and auto-dismiss after 7 seconds
+  // --- SOS beep alarm logic ---
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+  const endedHandlerRef = useRef<(() => void) | null>(null)
+  const alarmTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  function startAlarm() {
+    stopAlarm();
+    const audio = new Audio(SOS_BEEP_URL);
+    audioRef.current = audio;
+    const endedHandler = () => {
+      if (!audioRef.current) return;
+      audioRef.current.currentTime = 0;
+      audioRef.current.play();
+    };
+    endedHandlerRef.current = endedHandler;
+    audio.addEventListener("ended", endedHandler);
+    audio.play();
+  }
+
+  function stopAlarm() {
+    if (audioRef.current) {
+      if (endedHandlerRef.current) {
+        audioRef.current.removeEventListener("ended", endedHandlerRef.current);
+        endedHandlerRef.current = null;
+      }
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current = null;
+    }
+    if (alarmTimeoutRef.current) {
+      clearTimeout(alarmTimeoutRef.current);
+      alarmTimeoutRef.current = null;
+    }
+  }
+
+  // SOS beep effect: play in loop for up to 8s, or until alert is dismissed
+  useEffect(() => {
+    if (!alertsEnabled) return;
+    stopAlarm();
+    if (sosAlert) {
+      startAlarm();
+      // Vibrate if supported
+      if (navigator.vibrate) {
+        navigator.vibrate([500, 200, 500, 200, 500, 200, 500, 200, 500]);
+      }
+      alarmTimeoutRef.current = setTimeout(() => {
+        if (sosAlert) {
+          // Block this alert for this medicine/time/minute
+          const now = new Date();
+          const hhmm = `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`;
+          lastDismissedRef.current = { medicine: sosAlert.medicine, time: sosAlert.time, minute: hhmm };
+        }
+        stopAlarm();
+        setSosAlert(null);
+      }, 8000);
+    } else {
+      stopAlarm();
+    }
+    // Cleanup
+    return () => {
+      stopAlarm();
+    };
+  }, [sosAlert, alertsEnabled]);
+  // ...existing code...
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingReminder, setEditingReminder] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -257,6 +369,41 @@ export default function MedicineReminders({ initialReminders, userId }: Medicine
 
   return (
     <div className="space-y-6">
+      {/* Enable Alerts Prompt */}
+      {!alertsEnabled && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+          <div className="bg-white rounded-xl shadow-2xl p-8 flex flex-col items-center max-w-xs border-4 border-purple-500">
+            <span className="text-xl font-bold text-purple-700 mb-2">Enable Pill Alerts</span>
+            <span className="text-gray-700 mb-4 text-center">To receive sound and vibration alerts for your medicine reminders, please click below to enable alerts.</span>
+            <Button className="bg-purple-600 hover:bg-purple-700 w-full" onClick={handleEnableAlerts}>
+              Enable Alerts
+            </Button>
+          </div>
+        </div>
+      )}
+      {/* SOS Pill Time Alert Modal */}
+      {sosAlert && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+          <div className="bg-white rounded-xl shadow-2xl p-8 flex flex-col items-center max-w-xs border-4 border-red-500 animate-pulse">
+            <span className="text-3xl font-bold text-red-600 mb-2">SOS!</span>
+            <span className="text-lg font-semibold text-gray-900 mb-2">Pill Time</span>
+            <span className="text-purple-700 font-medium mb-2">{sosAlert.medicine}</span>
+            <span className="text-gray-700 mb-4">Take your medicine at <b>{sosAlert.time}</b></span>
+            <Button className="bg-red-600 hover:bg-red-700 w-full" onClick={() => {
+              if (sosAlert) {
+                // Block this alert for this medicine/time/minute
+                const now = new Date();
+                const hhmm = `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`;
+                lastDismissedRef.current = { medicine: sosAlert.medicine, time: sosAlert.time, minute: hhmm };
+              }
+              stopAlarm();
+              setSosAlert(null);
+            }}>
+              Dismiss Alert
+            </Button>
+          </div>
+        </div>
+      )}
       {/* Today's Reminders */}
       <Card className="bg-white border-0 shadow-lg">
         <CardHeader>

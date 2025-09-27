@@ -1,0 +1,11 @@
+(You must replace this with a real sound file for production. This is a placeholder description.)
+
+This file should be a short, catchy SOS beep (7 seconds max, mp3 format). You can generate one using a free sound editor or download a royalty-free beep from a site like freesound.org.
+
+File name: sos-beep.mp3
+Location: public/sos-beep.mp3
+
+Example sources:
+- https://freesound.org/people/InspectorJ/sounds/403008/
+- https://freesound.org/people/Benboncan/sounds/66951/
+
