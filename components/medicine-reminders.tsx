@@ -70,7 +70,7 @@ export default function MedicineReminders({ initialReminders, userId }: Medicine
     const freq = frequencies.find((f) => f.value === frequency)
     const times = freq ? freq.times : 1
 
-    const defaultTimes = []
+    const defaultTimes: string[] = []
     for (let i = 0; i < times; i++) {
       let hour: number
       switch (times) {
@@ -110,27 +110,45 @@ export default function MedicineReminders({ initialReminders, userId }: Medicine
     setFormData((prev) => ({ ...prev, reminder_times: newTimes }))
   }
 
+  // Utility to convert 12-hour or AM/PM time to 24-hour HH:mm:ss
+  function to24HourTime(time: string): string {
+    // If already in HH:mm:ss or HH:mm, return as HH:mm:ss
+    if (/^([01]?[0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$/.test(time)) {
+      const [h, m, s] = time.split(":")
+      return `${h.padStart(2, "0")}:${m.padStart(2, "0")}:${s ? s.padStart(2, "0") : "00"}`
+    }
+    // If in 12-hour format with AM/PM
+    const match = time.match(/^(\d{1,2}):(\d{2})\s*([AP]M)$/i)
+    if (match) {
+      let [_, hour, minute, period] = match
+      let h = parseInt(hour, 10)
+      if (period.toUpperCase() === "PM" && h !== 12) h += 12
+      if (period.toUpperCase() === "AM" && h === 12) h = 0
+      return `${h.toString().padStart(2, "0")}:${minute}:00`
+    }
+    return time // fallback
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-
     try {
-      console.log("[v0] Form data before submission:", formData)
+      // Convert all reminder times to 24-hour HH:mm:ss before validation/submission
+      const convertedTimes = formData.reminder_times.map(to24HourTime)
 
       // Validate all reminder times before submission
-      const validTimes = formData.reminder_times.every((time) => {
-        const isValid = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(time)
-        console.log("[v0] Validating time:", time, "Valid:", isValid)
+      const validTimes = convertedTimes.every((time) => {
+        const isValid = /^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/.test(time)
         return isValid
       })
 
       if (!validTimes) {
-        console.error("[v0] Invalid times detected, aborting submission")
         throw new Error("Invalid time format detected")
       }
 
       const reminderData = {
         ...formData,
+        reminder_times: convertedTimes,
         user_id: userId,
         is_active: true,
       }
@@ -265,7 +283,7 @@ export default function MedicineReminders({ initialReminders, userId }: Medicine
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    {reminder.reminder_times.map((time, index) => (
+                    {reminder.reminder_times.map((time: string, index: number) => (
                       <Badge key={index} variant="outline" className="bg-white">
                         {time}
                       </Badge>
@@ -440,7 +458,7 @@ export default function MedicineReminders({ initialReminders, userId }: Medicine
                   <div>
                     <span className="text-sm text-gray-600 block mb-1">Reminder Times:</span>
                     <div className="flex flex-wrap gap-2">
-                      {reminder.reminder_times.map((time, index) => (
+                      {reminder.reminder_times.map((time: string, index: number) => (
                         <Badge key={index} variant="outline" className="bg-purple-50 text-purple-700">
                           <Clock className="h-3 w-3 mr-1" />
                           {time}
