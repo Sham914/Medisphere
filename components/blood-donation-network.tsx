@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Heart, Plus, MapPin, Phone, Clock, AlertTriangle, Users, Droplets } from "lucide-react"
-import { format, parseISO } from "date-fns"
+import { format, parseISO, differenceInMonths, isValid } from "date-fns"
 
 interface BloodDonationNetworkProps {
   userId: string
@@ -63,6 +63,8 @@ export default function BloodDonationNetwork({
     contact_phone: "",
     additional_info: "",
   })
+
+  const [hasDonatedBefore, setHasDonatedBefore] = useState<boolean | null>(null)
 
   const supabase = createClient()
 
@@ -147,9 +149,14 @@ export default function BloodDonationNetwork({
     }
   }
 
+  const canBeAvailable = !donorProfile?.last_donation_date || differenceInMonths(new Date(), new Date(donorProfile.last_donation_date)) >= 3
+  const showWaitMessage = donorProfile?.last_donation_date && differenceInMonths(new Date(), new Date(donorProfile.last_donation_date)) < 3
   const toggleDonorAvailability = async () => {
     if (!donorProfile) return
-
+    if (!canBeAvailable) {
+      alert("You must wait 3 months since your last donation to become available again.")
+      return
+    }
     try {
       const { data, error } = await supabase
         .from("blood_donors")
@@ -188,6 +195,13 @@ export default function BloodDonationNetwork({
     )
   }
 
+  // Filter available donors to only show those eligible to donate
+  const eligibleAvailableDonors = availableDonors.filter((donor) => {
+    if (!donor.last_donation_date) return true
+    const lastDate = new Date(donor.last_donation_date)
+    return isValid(lastDate) && differenceInMonths(new Date(), lastDate) >= 3
+  })
+
   // Initialize donor form if profile exists
   useEffect(() => {
     if (donorProfile) {
@@ -201,6 +215,7 @@ export default function BloodDonationNetwork({
         emergency_contact: donorProfile.emergency_contact || "",
         location: donorProfile.location || "",
       })
+      setHasDonatedBefore(!!donorProfile.last_donation_date)
     }
   }, [donorProfile])
 
@@ -291,7 +306,7 @@ export default function BloodDonationNetwork({
                   </p>
                 </div>
               </div>
-              <div className="flex gap-3">
+              <div className="flex gap-3 items-center">
                 <Dialog open={isDonorDialogOpen} onOpenChange={setIsDonorDialogOpen}>
                   <DialogTrigger asChild>
                     <Button variant="outline" className="border-red-200 hover:bg-red-50 bg-transparent">
@@ -304,6 +319,40 @@ export default function BloodDonationNetwork({
                       <DialogDescription>Update your blood donor information</DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleDonorSubmit} className="space-y-4">
+                      <div>
+                        <Label>Have you donated blood before?</Label>
+                        <div className="flex gap-4 mt-1">
+                          <Button
+                            type="button"
+                            variant={hasDonatedBefore === true ? "default" : "outline"}
+                            onClick={() => setHasDonatedBefore(true)}
+                          >
+                            Yes
+                          </Button>
+                          <Button
+                            type="button"
+                            variant={hasDonatedBefore === false ? "default" : "outline"}
+                            onClick={() => {
+                              setHasDonatedBefore(false)
+                              setDonorFormData((prev) => ({ ...prev, last_donation_date: "" }))
+                            }}
+                          >
+                            No
+                          </Button>
+                        </div>
+                      </div>
+                      {hasDonatedBefore && (
+                        <div>
+                          <Label htmlFor="last_donation_date">Last Donation Date</Label>
+                          <Input
+                            id="last_donation_date"
+                            type="date"
+                            value={donorFormData.last_donation_date}
+                            onChange={(e) => setDonorFormData((prev) => ({ ...prev, last_donation_date: e.target.value }))}
+                            required
+                          />
+                        </div>
+                      )}
                       <div>
                         <Label htmlFor="name">Full Name</Label>
                         <Input
@@ -355,17 +404,6 @@ export default function BloodDonationNetwork({
                         </div>
                       </div>
                       <div>
-                        <Label htmlFor="last_donation_date">Last Donation Date</Label>
-                        <Input
-                          id="last_donation_date"
-                          type="date"
-                          value={donorFormData.last_donation_date}
-                          onChange={(e) =>
-                            setDonorFormData((prev) => ({ ...prev, last_donation_date: e.target.value }))
-                          }
-                        />
-                      </div>
-                      <div>
                         <Label htmlFor="location">Location</Label>
                         <Input
                           id="location"
@@ -396,8 +434,12 @@ export default function BloodDonationNetwork({
                         />
                       </div>
                       <div className="flex gap-3">
-                        <Button type="submit" className="flex-1 bg-red-600 hover:bg-red-700" disabled={isLoading}>
-                          {isLoading ? "Updating..." : "Update Profile"}
+                        <Button
+                          type="submit"
+                          className="flex-1 bg-red-600 hover:bg-red-700"
+                          disabled={isLoading}
+                        >
+                          {isLoading ? (donorProfile ? "Updating..." : "Registering...") : donorProfile ? "Update Profile" : "Register"}
                         </Button>
                         <Button
                           type="button"
@@ -414,12 +456,22 @@ export default function BloodDonationNetwork({
                 <Button
                   onClick={toggleDonorAvailability}
                   className={
-                    donorProfile.is_available ? "bg-yellow-600 hover:bg-yellow-700" : "bg-green-600 hover:bg-green-700"
+                    donorProfile.is_available
+                      ? "bg-yellow-600 hover:bg-yellow-700"
+                      : canBeAvailable
+                        ? "bg-green-600 hover:bg-green-700"
+                        : "bg-green-600 hover:bg-green-700 opacity-60 cursor-not-allowed"
                   }
+                  disabled={!canBeAvailable}
                 >
                   {donorProfile.is_available ? "Mark Unavailable" : "Mark Available"}
                 </Button>
               </div>
+              {showWaitMessage && (
+                <div className="text-red-600 text-sm font-medium mt-2">
+                  You must wait 3 months since your last donation to become available again.
+                </div>
+              )}
             </div>
           ) : (
             <div className="text-center py-8">
@@ -439,6 +491,40 @@ export default function BloodDonationNetwork({
                     <DialogDescription>Join our blood donation network</DialogDescription>
                   </DialogHeader>
                   <form onSubmit={handleDonorSubmit} className="space-y-4">
+                    <div>
+                      <Label>Have you donated blood before?</Label>
+                      <div className="flex gap-4 mt-1">
+                        <Button
+                          type="button"
+                          variant={hasDonatedBefore === true ? "default" : "outline"}
+                          onClick={() => setHasDonatedBefore(true)}
+                        >
+                          Yes
+                        </Button>
+                        <Button
+                          type="button"
+                          variant={hasDonatedBefore === false ? "default" : "outline"}
+                          onClick={() => {
+                            setHasDonatedBefore(false)
+                            setDonorFormData((prev) => ({ ...prev, last_donation_date: "" }))
+                          }}
+                        >
+                          No
+                        </Button>
+                      </div>
+                    </div>
+                    {hasDonatedBefore && (
+                      <div>
+                        <Label htmlFor="last_donation_date">Last Donation Date</Label>
+                        <Input
+                          id="last_donation_date"
+                          type="date"
+                          value={donorFormData.last_donation_date}
+                          onChange={(e) => setDonorFormData((prev) => ({ ...prev, last_donation_date: e.target.value }))}
+                          required
+                        />
+                      </div>
+                    )}
                     <div>
                       <Label htmlFor="blood_type">Blood Type</Label>
                       <Select
@@ -650,7 +736,6 @@ export default function BloodDonationNetwork({
             </DialogContent>
           </Dialog>
         </div>
-
         <TabsContent value="requests" className="space-y-4">
           {bloodRequests.length > 0 ? (
             <div className="grid gap-4">
@@ -728,11 +813,10 @@ export default function BloodDonationNetwork({
             </Card>
           )}
         </TabsContent>
-
         <TabsContent value="donors" className="space-y-4">
-          {availableDonors.length > 0 ? (
+          {eligibleAvailableDonors.length > 0 ? (
             <div className="grid md:grid-cols-2 gap-4">
-              {availableDonors.map((donor) => (
+              {eligibleAvailableDonors.map((donor) => (
                 <Card key={donor.id} className="bg-white border-0 shadow-lg">
                   <CardHeader>
                     <div className="flex items-start justify-between">
