@@ -43,6 +43,7 @@ export default function BloodDonationNetwork({
   const [isLoading, setIsLoading] = useState(false)
 
   const [donorFormData, setDonorFormData] = useState({
+    name: "",
     blood_type: "",
     age: "",
     weight: "",
@@ -191,8 +192,9 @@ export default function BloodDonationNetwork({
   useEffect(() => {
     if (donorProfile) {
       setDonorFormData({
+        name: donorProfile.name || "",
         blood_type: donorProfile.blood_type,
-        age: donorProfile.age.toString(),
+        age: donorProfile.age?.toString() || "",
         weight: donorProfile.weight?.toString() || "",
         last_donation_date: donorProfile.last_donation_date || "",
         medical_conditions: donorProfile.medical_conditions || "",
@@ -302,6 +304,16 @@ export default function BloodDonationNetwork({
                       <DialogDescription>Update your blood donor information</DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleDonorSubmit} className="space-y-4">
+                      <div>
+                        <Label htmlFor="name">Full Name</Label>
+                        <Input
+                          id="name"
+                          value={donorFormData.name}
+                          onChange={(e) => setDonorFormData((prev) => ({ ...prev, name: e.target.value }))}
+                          placeholder="Your full name"
+                          required
+                        />
+                      </div>
                       <div>
                         <Label htmlFor="blood_type">Blood Type</Label>
                         <Select
@@ -726,7 +738,8 @@ export default function BloodDonationNetwork({
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <CardTitle className="text-lg text-gray-900 mb-2">Blood Type: {donor.blood_type}</CardTitle>
-                        <div className="flex items-center gap-3 mb-2">
+                        <div className="mt-1 text-base font-semibold text-gray-900">{donor.name || "Unknown Donor"}</div>
+                        <div className="flex items-center gap-3 mb-2 mt-1">
                           <Badge className="bg-green-100 text-green-700">Available</Badge>
                           <span className="text-sm text-gray-600">{donor.age} years old</span>
                           {donor.weight && <span className="text-sm text-gray-600">{donor.weight} kg</span>}
@@ -740,8 +753,7 @@ export default function BloodDonationNetwork({
                           )}
                           <div className="flex items-center gap-1">
                             <Clock className="h-4 w-4" />
-                            Last donation:{" "}
-                            {donor.last_donation_date
+                            Last donation: {donor.last_donation_date
                               ? format(parseISO(donor.last_donation_date), "MMM yyyy")
                               : "Never"}
                           </div>
