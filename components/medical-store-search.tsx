@@ -218,11 +218,13 @@ export default function MedicalStoreSearch() {
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-3 pt-2">
-                      <Link href={`/medical-stores/${store.id}`}>
-                        <Button className="bg-green-600 hover:bg-green-700 shadow-lg hover:shadow-xl transition-all">
-                          <Pill className="h-4 w-4 mr-2" />
-                          View Details
-                        </Button>
+                      <Link href={`/medical-stores/${store.id}`} passHref legacyBehavior>
+                        <a style={{ textDecoration: 'none' }}>
+                          <Button className="bg-green-600 hover:bg-green-700 shadow-lg hover:shadow-xl transition-all">
+                            <Pill className="h-4 w-4 mr-2" />
+                            View Details
+                          </Button>
+                        </a>
                       </Link>
                       <Button
                         variant="outline"
