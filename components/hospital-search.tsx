@@ -1,81 +1,59 @@
-"use client"
 
-import { useState, useEffect } from "react"
-import { createClient } from "@/lib/supabase/client"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { useCity } from "@/hooks/city-context"
-import { Heart, MapPin, Phone, Mail, Star, Clock, Users, Navigation, Award, Shield, Building2 } from "lucide-react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import Link from "next/link"
 
+
+"use client";
+import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useCity } from "@/hooks/city-context";
+import { Heart, MapPin, Phone, Mail, Star, Clock, Users, Navigation, Award, Shield, Building2 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import Link from "next/link";
 
 export default function HospitalSearch() {
-  const [hospitals, setHospitals] = useState<any[]>([])
-  const [searchTerm, setSearchTerm] = useState("")
-  const [selectedSpecialty, setSelectedSpecialty] = useState("all")
-  const [emergencyOnly, setEmergencyOnly] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const supabase = createClient()
-
+  const [hospitals, setHospitals] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedSpecialty, setSelectedSpecialty] = useState("all");
+  const [emergencyOnly, setEmergencyOnly] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const supabase = createClient();
   const specialities = [
-    "Cardiology",
-    "Emergency",
-    "Surgery",
-    "Pediatrics",
-    "Orthopedics",
-    "Neurology",
-    "Dermatology",
-    "Gynecology",
-    "Internal Medicine",
-    "Radiology",
-    "Infertility",
-    "General Medicine",
-  ]
-  
-  const { city } = useCity()
+    "Cardiology","Emergency","Surgery","Pediatrics","Orthopedics","Neurology","Dermatology","Gynecology","Internal Medicine","Radiology","Infertility","General Medicine",
+  ];
+  const { city } = useCity();
   const searchHospitals = async () => {
-    setIsLoading(true)
-    let query = supabase.from("hospitals").select("*")
-
-    // Filter by city
-    query = query.eq("city", city)
-
+    setIsLoading(true);
+    let query = supabase.from("hospitals").select("*");
+    query = query.eq("city", city);
     if (searchTerm) {
-      query = query.or(`name.ilike.%${searchTerm}%,address.ilike.%${searchTerm}%`)
+      query = query.or(`name.ilike.%${searchTerm}%,address.ilike.%${searchTerm}%`);
     }
-
     if (selectedSpecialty !== "all") {
-      query = query.contains("specialities", [selectedSpecialty])
+      query = query.contains("specialities", [selectedSpecialty]);
     }
-
     if (emergencyOnly) {
-      query = query.eq("emergency_services", true)
+      query = query.eq("emergency_services", true);
     }
-
-    const { data, error } = await query.order("rating", { ascending: false }).limit(20)
-    setHospitals(data || [])
-    setIsLoading(false)
-  }
-
+    const { data } = await query.order("rating", { ascending: false }).limit(20);
+    setHospitals(data || []);
+    setIsLoading(false);
+  };
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
-      searchHospitals()
-    }, 300)
-    return () => clearTimeout(debounceTimer)
-  }, [searchTerm, selectedSpecialty, emergencyOnly, city])
-
+      searchHospitals();
+    }, 300);
+    return () => clearTimeout(debounceTimer);
+  }, [searchTerm, selectedSpecialty, emergencyOnly, city]);
   const openGoogleMaps = (address: string, name: string) => {
-    const encodedAddress = encodeURIComponent(`${name}, ${address}`)
-    const url = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`
-    window.open(url, '_blank')
-  }
-
+    const encodedAddress = encodeURIComponent(`${name}, ${address}`);
+    const url = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
+    window.open(url, '_blank');
+  };
   return (
     <div className="space-y-6">
-      {/* Search Filters */}
       <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-0 shadow-xl">
         <CardHeader>
           <CardTitle className="flex items-center gap-3">
@@ -118,241 +96,132 @@ export default function HospitalSearch() {
           </div>
         </CardContent>
       </Card>
-      {/* Results */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-xl font-semibold text-gray-900">
             {isLoading ? "Searching..." : `${hospitals.length} hospitals found`}
           </h3>
         </div>
-
         <div className="grid gap-6">
           {hospitals.map((hospital) => (
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="bg-blue-100 p-2 rounded-lg">
-                        <Building2 className="h-6 w-6 text-blue-600" />
-                      </div>
-                      <CardTitle className="text-xl text-gray-900 group-hover:text-blue-600 transition-colors">
-                        {hospital.name}
-                      </CardTitle>
-                    </div>
-                    <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
-                      <div className="flex items-center gap-1">
-                        <MapPin className="h-4 w-4" />
-                        {hospital.address}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Phone className="h-4 w-4" />
-                        {hospital.phone}
-                      </div>
-                      {hospital.email && (
-                        <div className="flex items-center gap-1">
-                          <Mail className="h-4 w-4" />
-                          {hospital.email}
+            <>
+              <Card key={hospital.id} className="bg-white border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] group">
+                <CardHeader>
+                  <div className="flex flex-col">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="bg-blue-100 p-2 rounded-lg">
+                            <Building2 className="h-6 w-6 text-blue-600" />
+                          </div>
+                          <CardTitle className="text-xl text-gray-900 group-hover:text-blue-600 transition-colors">
+                            {hospital.name}
+                          </CardTitle>
                         </div>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="flex items-center gap-1">
-                        <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                        <span className="font-medium">{hospital.rating}</span>
-                        <span className="text-xs text-gray-500">({Math.floor(Math.random() * 500) + 100} reviews)</span>
+                        <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
+                          <div className="flex items-center gap-1">
+                            <MapPin className="h-4 w-4" />
+                            {hospital.address}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Phone className="h-4 w-4" />
+                            {hospital.phone}
+                          </div>
+                          {hospital.email && (
+                            <div className="flex items-center gap-1">
+                              <Mail className="h-4 w-4" />
+                              {hospital.email}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="flex items-center gap-1">
+                            <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                            <span className="font-medium">{hospital.rating}</span>
+                            <span className="text-xs text-gray-500">({(typeof hospital.id === 'number' ? (hospital.id % 500) + 100 : (hospital.name?.length ?? 0) + 100)} reviews)</span>
+                          </div>
+                          {hospital.emergency_services && (
+                            <Badge className="bg-red-100 text-red-700 hover:bg-red-200 animate-pulse">
+                              <Clock className="h-3 w-3 mr-1" />
+                              24/7 Emergency
+                            </Badge>
+                          )}
+                          <Badge className="bg-green-100 text-green-700">
+                            <Shield className="h-3 w-3 mr-1" />
+                            Verified
+                          </Badge>
+                        </div>
                       </div>
-                      {hospital.emergency_services && (
-                        <Badge className="bg-red-100 text-red-700 hover:bg-red-200 animate-pulse">
-                          <Clock className="h-3 w-3 mr-1" />
-                          24/7 Emergency
-                        </Badge>
-                      )}
-                      <Badge className="bg-green-100 text-green-700">
-                        <Shield className="h-3 w-3 mr-1" />
-                        Verified
-                      </Badge>
                     </div>
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
-                      <Award className="h-4 w-4 text-blue-600" />
-                      Medical Specialities
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {(() => {
-                        let specialities: string[] = [];
-                        const raw = hospital.specialities;
-                        // Debug log for troubleshooting
-                        console.log('Hospital:', hospital.name, 'Specialities raw value:', raw);
-                        if (Array.isArray(raw)) {
-                          specialities = raw;
-                        } else if (typeof raw === "string") {
-                          if (raw.startsWith("{") && raw.endsWith("}")) {
-                            specialities = raw.slice(1, -1).split(",").map((s: string) => s.trim()).filter(Boolean);
-                          } else {
-                            try {
-                              const parsed = JSON.parse(raw);
-                              if (Array.isArray(parsed)) specialities = parsed;
-                            } catch {
-                              specialities = raw.split(",").map((s: string) => s.trim()).filter(Boolean);
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
+                        <Award className="h-4 w-4 text-blue-600" />
+                        Medical Specialities
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        {(() => {
+                          let specialities: string[] = [];
+                          const raw = hospital.specialities;
+                          if (Array.isArray(raw)) {
+                            specialities = raw;
+                          } else if (typeof raw === "string") {
+                            if (raw.startsWith("{") && raw.endsWith("}")) {
+                              specialities = raw.slice(1, -1).split(",").map((s: string) => s.trim()).filter(Boolean);
+                            } else {
+                              try {
+                                const parsed = JSON.parse(raw);
+                                if (Array.isArray(parsed)) specialities = parsed;
+                              } catch {
+                                specialities = raw.split(",").map((s: string) => s.trim()).filter(Boolean);
+                              }
                             }
                           }
-                        }
-                        if (specialities.length === 0) {
-                          return <span className="text-gray-500 text-sm">No specialities listed</span>;
-                        }
-                        return specialities.map((specialty: string) => (
-                          <Badge key={specialty} variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors">
-                            {specialty}
-                          </Badge>
-                        ));
-                      })()}
+                          if (specialities.length === 0) {
+                            return <span className="text-gray-500 text-sm">No specialities listed</span>;
+                          }
+                          return specialities.map((specialty: string) => (
+                            <Badge key={specialty} variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors">
+                              {specialty}
+                            </Badge>
+                          ));
+                        })()}
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex flex-wrap gap-3 pt-2">
-                    <Link href={`/hospitals/${hospital.id}`} legacyBehavior>
-                      <Button className="bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all">
-                        <Heart className="h-4 w-4 mr-2" />
-                        View Details
+                    <div className="flex flex-wrap gap-3 pt-2">
+                      <Button asChild className="bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all">
+                        <Link href={`/hospitals/${hospital.id}`}>
+                          <Heart className="h-4 w-4 mr-2" />
+                          View Details
+                        </Link>
                       </Button>
-                    </Link>
-                    <Button 
-                      variant="outline" 
-                      className="border-blue-200 hover:bg-blue-50 bg-transparent shadow-md hover:shadow-lg transition-all"
-                      onClick={() => openGoogleMaps(hospital.address, hospital.name)}
-                    >
-                      <Navigation className="h-4 w-4 mr-2" />
-                      Get Directions
-                    </Button>
-                    <Button variant="outline" className="border-green-200 hover:bg-green-50 bg-transparent shadow-md hover:shadow-lg transition-all">
-                        <Users className="h-4 w-4 mr-2" />
-                        View Doctors
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card key={hospital.id} className="bg-white border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] group">
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="bg-blue-100 p-2 rounded-lg">
-                        <Building2 className="h-6 w-6 text-blue-600" />
-                      </div>
-                      <CardTitle className="text-xl text-gray-900 group-hover:text-blue-600 transition-colors">
-                        {hospital.name}
-                      </CardTitle>
-                    </div>
-                    <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
-                      <div className="flex items-center gap-1">
-                        <MapPin className="h-4 w-4" />
-                        {hospital.address}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Phone className="h-4 w-4" />
-                        {hospital.phone}
-                      </div>
-                      {hospital.email && (
-                        <div className="flex items-center gap-1">
-                          <Mail className="h-4 w-4" />
-                          {hospital.email}
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="flex items-center gap-1">
-                        <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                        <span className="font-medium">{hospital.rating}</span>
-                        <span className="text-xs text-gray-500">({Math.floor(Math.random() * 500) + 100} reviews)</span>
-                      </div>
-                      {hospital.emergency_services && (
-                        <Badge className="bg-red-100 text-red-700 hover:bg-red-200 animate-pulse">
-                          <Clock className="h-3 w-3 mr-1" />
-                          24/7 Emergency
-                        </Badge>
-                      )}
-                      <Badge className="bg-green-100 text-green-700">
-                        <Shield className="h-3 w-3 mr-1" />
-                        Verified
-                      </Badge>
+                      <Button 
+                        variant="outline" 
+                        className="border-blue-200 hover:bg-blue-50 bg-transparent shadow-md hover:shadow-lg transition-all"
+                        onClick={() => openGoogleMaps(hospital.address, hospital.name)}
+                      >
+                        <Navigation className="h-4 w-4 mr-2" />
+                        Get Directions
+                      </Button>
+                      <Button variant="outline" className="border-green-200 hover:bg-green-50 bg-transparent shadow-md hover:shadow-lg transition-all">
+                          <Users className="h-4 w-4 mr-2" />
+                          View Doctors
+                      </Button>
                     </div>
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
-                      <Award className="h-4 w-4 text-blue-600" />
-                      Medical Specialities
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {(() => {
-                        let specialities: string[] = [];
-                        const raw = hospital.specialities;
-                        // Debug log for troubleshooting
-                        console.log('Hospital:', hospital.name, 'Specialities raw value:', raw);
-                        if (Array.isArray(raw)) {
-                          specialities = raw;
-                        } else if (typeof raw === "string") {
-                          if (raw.startsWith("{") && raw.endsWith("}")) {
-                            specialities = raw.slice(1, -1).split(",").map((s: string) => s.trim()).filter(Boolean);
-                          } else {
-                            try {
-                              const parsed = JSON.parse(raw);
-                              if (Array.isArray(parsed)) specialities = parsed;
-                            } catch {
-                              specialities = raw.split(",").map((s: string) => s.trim()).filter(Boolean);
-                            }
-                          }
-                        }
-                        if (specialities.length === 0) {
-                          return <span className="text-gray-500 text-sm">No specialities listed</span>;
-                        }
-                        return specialities.map((specialty: string) => (
-                          <Badge key={specialty} variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors">
-                            {specialty}
-                          </Badge>
-                        ));
-                      })()}
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-3 pt-2">
-                    <Button asChild className="bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all">
-                      <Link href={`/hospitals/${hospital.id}`}>
-                        <Heart className="h-4 w-4 mr-2" />
-                        View Details
-                      </Link>
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      className="border-blue-200 hover:bg-blue-50 bg-transparent shadow-md hover:shadow-lg transition-all"
-                      onClick={() => openGoogleMaps(hospital.address, hospital.name)}
-                    >
-                      <Navigation className="h-4 w-4 mr-2" />
-                      Get Directions
-                    </Button>
-                    <Button variant="outline" className="border-green-200 hover:bg-green-50 bg-transparent shadow-md hover:shadow-lg transition-all">
-                        <Users className="h-4 w-4 mr-2" />
-                        View Doctors
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </>
           ))}
         </div>
-
         {hospitals.length === 0 && !isLoading && (
           <Card className="bg-gradient-to-br from-gray-50 to-gray-100 border-0 shadow-lg">
             <CardContent className="text-center py-12">
               <div className="bg-gray-200 p-4 rounded-full w-fit mx-auto mb-4">
-                <Heart className="h-12 w-12 text-gray-400" />
+                <Building2 className="h-12 w-12 text-gray-400" />
               </div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">No hospitals found</h3>
               <p className="text-gray-600">Try adjusting your search criteria</p>
