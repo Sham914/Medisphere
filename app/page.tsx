@@ -238,7 +238,7 @@ export default function HomePage() {
             Join thousands of users who trust Medisphere for their healthcare needs. Start your journey to better health
             today.
           </p>
-          <Link href="/auth/register" legacyBehavior>
+          <Link href="/auth/register">
             <Button size="lg" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 h-12 px-8 shadow-lg hover:shadow-xl transition-all">
               <Heart className="h-5 w-5 mr-2" />
               Create Your Account
