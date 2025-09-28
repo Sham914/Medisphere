@@ -23,7 +23,8 @@ export default async function MedicalStoreDetailPage({ params }: PageProps) {
   }
 
   // Get medical store details
-  const { data: store } = await supabase.from("medical_stores").select("*").eq("id", id).single()
+  // Fetch store with medicines array
+  const { data: store } = await supabase.from("medical_stores").select("*, medicines").eq("id", id).single()
 
   if (!store) {
     notFound()
@@ -223,36 +224,27 @@ export default async function MedicalStoreDetailPage({ params }: PageProps) {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                  <span>Paracetamol</span>
-                  <Badge variant="secondary" className="bg-green-100 text-green-700">
-                    In Stock
-                  </Badge>
-                </div>
-                <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                  <span>Ibuprofen</span>
-                  <Badge variant="secondary" className="bg-green-100 text-green-700">
-                    In Stock
-                  </Badge>
-                </div>
-                <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                  <span>Aspirin</span>
-                  <Badge variant="secondary" className="bg-green-100 text-green-700">
-                    In Stock
-                  </Badge>
-                </div>
-                <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                  <span>Cough Syrup</span>
-                  <Badge variant="secondary" className="bg-yellow-100 text-yellow-700">
-                    Limited Stock
-                  </Badge>
-                </div>
-                <div className="flex justify-between items-center py-2">
-                  <span>Antibiotics</span>
-                  <Badge variant="secondary" className="bg-blue-100 text-blue-700">
-                    Prescription Required
-                  </Badge>
-                </div>
+                {Array.isArray(store.medicines) && store.medicines.length > 0 ? (
+                  store.medicines.map((med: any, idx: number) => (
+                    <div key={med.name + idx} className={`flex justify-between items-center py-2${idx !== store.medicines.length - 1 ? ' border-b border-gray-100' : ''}`}>
+                      <span>{med.name}</span>
+                      {med.status === 'in_stock' && (
+                        <Badge variant="secondary" className="bg-green-100 text-green-700">In Stock</Badge>
+                      )}
+                      {med.status === 'out_of_stock' && (
+                        <Badge variant="secondary" className="bg-gray-200 text-gray-500">Out of Stock</Badge>
+                      )}
+                      {med.status === 'limited' && (
+                        <Badge variant="secondary" className="bg-yellow-100 text-yellow-700">Limited Stock</Badge>
+                      )}
+                      {med.status === 'prescription' && (
+                        <Badge variant="secondary" className="bg-blue-100 text-blue-700">Prescription Required</Badge>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-gray-500 text-sm">No medicines listed</div>
+                )}
               </div>
             </CardContent>
           </Card>
