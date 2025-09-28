@@ -104,10 +104,9 @@ export default function HospitalSearch() {
         </div>
         <div className="grid gap-6">
           {hospitals.map((hospital) => (
-            <>
-              <Card key={hospital.id} className="bg-white border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] group">
-                <CardHeader>
-                  <div className="flex flex-col">
+            <Card key={hospital.id} className="bg-white border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] group">
+              <CardHeader>
+                <div className="flex flex-col">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-3">
@@ -183,8 +182,8 @@ export default function HospitalSearch() {
                           if (specialities.length === 0) {
                             return <span className="text-gray-500 text-sm">No specialities listed</span>;
                           }
-                          return specialities.map((specialty: string) => (
-                            <Badge key={specialty} variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors">
+                          return specialities.map((specialty: string, index: number) => (
+                            <Badge key={specialty + index} variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors">
                               {specialty}
                             </Badge>
                           ));
@@ -214,7 +213,7 @@ export default function HospitalSearch() {
                   </div>
                 </CardContent>
               </Card>
-            </>
+
           ))}
         </div>
         {hospitals.length === 0 && !isLoading && (
