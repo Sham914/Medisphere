@@ -145,12 +145,20 @@ export default function MedicineReminders({ initialReminders, userId }: Medicine
   const [editingReminder, setEditingReminder] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(false)
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    medicine_name: string;
+    dosage: string;
+    frequency: string;
+    start_date: string;
+    end_date: string | null;
+    reminder_times: string[];
+    notes: string;
+  }>({
     medicine_name: "",
     dosage: "",
     frequency: "once_daily",
     start_date: "",
-    end_date: "",
+    end_date: null,
     reminder_times: ["09:00"],
     notes: "",
   })
@@ -171,7 +179,7 @@ export default function MedicineReminders({ initialReminders, userId }: Medicine
       dosage: "",
       frequency: "once_daily",
       start_date: "",
-      end_date: "",
+      end_date: null,
       reminder_times: ["09:00"],
       notes: "",
     })
@@ -258,12 +266,22 @@ export default function MedicineReminders({ initialReminders, userId }: Medicine
         throw new Error("Invalid time format detected")
       }
 
-      const reminderData = {
-        ...formData,
+      // Robustly build reminderData so end_date is only included if set
+      const reminderData: any = {
+        medicine_name: formData.medicine_name,
+        dosage: formData.dosage,
+        frequency: formData.frequency,
+        start_date: formData.start_date,
         reminder_times: convertedTimes,
         user_id: userId,
         is_active: true,
+        notes: formData.notes,
+      };
+      if (formData.end_date && formData.end_date.trim() !== "") {
+        reminderData.end_date = formData.end_date;
       }
+      // Log the final payload
+      console.log("[DEBUG] Final reminderData payload:", JSON.stringify(reminderData));
 
       console.log("[v0] Submitting reminder data:", reminderData)
 
@@ -302,7 +320,7 @@ export default function MedicineReminders({ initialReminders, userId }: Medicine
       dosage: reminder.dosage,
       frequency: reminder.frequency,
       start_date: reminder.start_date,
-      end_date: reminder.end_date || "",
+      end_date: reminder.end_date || null,
       reminder_times: reminder.reminder_times,
       notes: reminder.notes || "",
     })
@@ -515,8 +533,8 @@ export default function MedicineReminders({ initialReminders, userId }: Medicine
                   <Input
                     id="end_date"
                     type="date"
-                    value={formData.end_date}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, end_date: e.target.value }))}
+                    value={formData.end_date || ""}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, end_date: e.target.value === "" ? null : e.target.value }))}
                   />
                 </div>
               </div>

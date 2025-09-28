@@ -792,10 +792,18 @@ export default function BloodDonationNetwork({
                           <span className="text-sm text-gray-600">
                             {compatibleDonors.length} compatible donors available
                           </span>
-                          <Button size="sm" className="bg-red-600 hover:bg-red-700">
-                            <Phone className="h-4 w-4 mr-2" />
-                            Contact
-                          </Button>
+                          <a
+                            href={`tel:${request.contact_phone}`}
+                            style={{ textDecoration: 'none' }}
+                            tabIndex={-1}
+                          >
+                            <Button size="sm" className="bg-red-600 hover:bg-red-700" asChild>
+                              <span style={{ display: 'flex', alignItems: 'center' }}>
+                                <Phone className="h-4 w-4 mr-2" />
+                                Contact
+                              </span>
+                            </Button>
+                          </a>
                         </div>
                       </div>
                     </CardContent>
@@ -851,10 +859,18 @@ export default function BloodDonationNetwork({
                         <span className="font-semibold">Medical Conditions:</span> {donor.medical_conditions?.trim() ? donor.medical_conditions : "nothing concerning"}
                       </div>
                       <div className="flex gap-2">
-                        <Button size="sm" className="bg-red-600 hover:bg-red-700">
-                          <Phone className="h-4 w-4 mr-2" />
-                          Contact Donor
-                        </Button>
+                        <a
+                          href={`tel:${donor.emergency_contact || ''}`}
+                          style={{ textDecoration: 'none' }}
+                          tabIndex={-1}
+                        >
+                          <Button size="sm" className="bg-red-600 hover:bg-red-700" asChild>
+                            <span style={{ display: 'flex', alignItems: 'center' }}>
+                              <Phone className="h-4 w-4 mr-2" />
+                              Contact Donor
+                            </span>
+                          </Button>
+                        </a>
                       </div>
                     </div>
                   </CardContent>
