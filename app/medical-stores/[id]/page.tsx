@@ -36,11 +36,9 @@ export default async function MedicalStoreDetailPage({ params }: PageProps) {
     return { status: "Open", color: "bg-green-100 text-green-700" }
   }
 
-  const openGoogleMaps = (address: string, name: string) => {
-    const encodedAddress = encodeURIComponent(`${name}, ${address}`)
-    const url = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`
-    window.open(url, '_blank')
-  }
+
+  // Helper for Google Maps URL
+  const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(store.name + ', ' + store.address)}`;
 
   const operatingStatus = getOperatingStatus(store.operating_hours)
 
@@ -56,16 +54,16 @@ export default async function MedicalStoreDetailPage({ params }: PageProps) {
             <h1 className="text-2xl font-bold text-gray-900">Medisphere</h1>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/medical-stores">
-              <Button variant="ghost" className="text-gray-700 hover:text-green-600">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Stores
-              </Button>
+            <Link
+              href="/medical-stores"
+              className="text-gray-700 hover:text-green-600 flex items-center px-4 py-2 rounded transition-colors font-medium"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Stores
             </Link>
           </div>
         </div>
       </header>
-
       <div className="container mx-auto px-4 py-8">
         {/* Store Details */}
         <Card className="bg-gradient-to-br from-white to-green-50 border-0 shadow-xl mb-8">
@@ -180,14 +178,20 @@ export default async function MedicalStoreDetailPage({ params }: PageProps) {
                       <Phone className="h-4 w-4 mr-2" />
                       Call Store
                     </Button>
-                    <Button 
-                      variant="outline" 
-                      className="w-full border-green-200 hover:bg-green-50 h-12 bg-transparent shadow-md hover:shadow-lg transition-all"
-                      onClick={() => openGoogleMaps(store.address, store.name)}
+                    <a
+                      href={googleMapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block"
                     >
-                      <Navigation className="h-4 w-4 mr-2" />
-                      Get Directions
-                    </Button>
+                      <Button 
+                        variant="outline" 
+                        className="w-full border-green-200 hover:bg-green-50 h-12 bg-transparent shadow-md hover:shadow-lg transition-all"
+                      >
+                        <Navigation className="h-4 w-4 mr-2" />
+                        Get Directions
+                      </Button>
+                    </a>
                     <Button variant="outline" className="w-full border-green-200 hover:bg-green-50 h-12 bg-transparent shadow-md hover:shadow-lg transition-all">
                       <Clock className="h-4 w-4 mr-2" />
                       Check Medicine Availability
@@ -306,5 +310,5 @@ export default async function MedicalStoreDetailPage({ params }: PageProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

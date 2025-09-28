@@ -21,20 +21,19 @@ export default function HomePage() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/auth/login">
-              <Button variant="ghost" className="text-gray-700 hover:text-blue-600 hover:bg-blue-50">
+            <Button asChild variant="ghost" className="text-gray-700 hover:text-blue-600 hover:bg-blue-50">
+              <Link href="/auth/login">
                 Sign In
-              </Button>
-            </Link>
-            <Link href="/auth/register">
-              <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all">
+              </Link>
+            </Button>
+            <Button asChild className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all">
+              <Link href="/auth/register">
                 Get Started
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </div>
       </header>
-
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-16 text-center">
         <div className="max-w-4xl mx-auto">
@@ -65,21 +64,20 @@ export default function HomePage() {
             </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/auth/register">
-              <Button size="lg" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 h-12 px-8 shadow-lg hover:shadow-xl transition-all">
+            <Button asChild size="lg" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 h-12 px-8 shadow-lg hover:shadow-xl transition-all">
+              <Link href="/auth/register">
                 <Sparkles className="h-5 w-5 mr-2" />
                 Start Your Journey
-              </Button>
-            </Link>
-            <Link href="/auth/login">
-              <Button size="lg" variant="outline" className="h-12 px-8 border-blue-200 hover:bg-blue-50 bg-transparent shadow-md hover:shadow-lg transition-all">
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="outline" className="h-12 px-8 border-blue-200 hover:bg-blue-50 bg-transparent shadow-md hover:shadow-lg transition-all">
+              <Link href="/auth/login">
                 Sign In
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </div>
       </section>
-
       {/* Features Grid */}
       <section className="container mx-auto px-4 py-16">
         <div className="text-center mb-12">
@@ -227,7 +225,6 @@ export default function HomePage() {
           </Card>
         </div>
       </section>
-
       {/* CTA Section */}
       <section className="container mx-auto px-4 py-16">
         <div className="bg-gradient-to-br from-white to-blue-50 rounded-2xl shadow-2xl p-8 md:p-12 text-center border border-blue-100">
@@ -241,7 +238,7 @@ export default function HomePage() {
             Join thousands of users who trust Medisphere for their healthcare needs. Start your journey to better health
             today.
           </p>
-          <Link href="/auth/register">
+          <Link href="/auth/register" legacyBehavior>
             <Button size="lg" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 h-12 px-8 shadow-lg hover:shadow-xl transition-all">
               <Heart className="h-5 w-5 mr-2" />
               Create Your Account
@@ -249,7 +246,6 @@ export default function HomePage() {
           </Link>
         </div>
       </section>
-
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
         <div className="container mx-auto px-4">
@@ -272,5 +268,5 @@ export default function HomePage() {
         </div>
       </footer>
     </div>
-  )
+  );
 }

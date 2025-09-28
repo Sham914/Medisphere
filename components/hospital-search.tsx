@@ -118,7 +118,6 @@ export default function HospitalSearch() {
           </div>
         </CardContent>
       </Card>
-
       {/* Results */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
@@ -129,6 +128,114 @@ export default function HospitalSearch() {
 
         <div className="grid gap-6">
           {hospitals.map((hospital) => (
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="bg-blue-100 p-2 rounded-lg">
+                        <Building2 className="h-6 w-6 text-blue-600" />
+                      </div>
+                      <CardTitle className="text-xl text-gray-900 group-hover:text-blue-600 transition-colors">
+                        {hospital.name}
+                      </CardTitle>
+                    </div>
+                    <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
+                      <div className="flex items-center gap-1">
+                        <MapPin className="h-4 w-4" />
+                        {hospital.address}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Phone className="h-4 w-4" />
+                        {hospital.phone}
+                      </div>
+                      {hospital.email && (
+                        <div className="flex items-center gap-1">
+                          <Mail className="h-4 w-4" />
+                          {hospital.email}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="flex items-center gap-1">
+                        <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                        <span className="font-medium">{hospital.rating}</span>
+                        <span className="text-xs text-gray-500">({Math.floor(Math.random() * 500) + 100} reviews)</span>
+                      </div>
+                      {hospital.emergency_services && (
+                        <Badge className="bg-red-100 text-red-700 hover:bg-red-200 animate-pulse">
+                          <Clock className="h-3 w-3 mr-1" />
+                          24/7 Emergency
+                        </Badge>
+                      )}
+                      <Badge className="bg-green-100 text-green-700">
+                        <Shield className="h-3 w-3 mr-1" />
+                        Verified
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
+                      <Award className="h-4 w-4 text-blue-600" />
+                      Medical Specialities
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {(() => {
+                        let specialities: string[] = [];
+                        const raw = hospital.specialities;
+                        // Debug log for troubleshooting
+                        console.log('Hospital:', hospital.name, 'Specialities raw value:', raw);
+                        if (Array.isArray(raw)) {
+                          specialities = raw;
+                        } else if (typeof raw === "string") {
+                          if (raw.startsWith("{") && raw.endsWith("}")) {
+                            specialities = raw.slice(1, -1).split(",").map((s: string) => s.trim()).filter(Boolean);
+                          } else {
+                            try {
+                              const parsed = JSON.parse(raw);
+                              if (Array.isArray(parsed)) specialities = parsed;
+                            } catch {
+                              specialities = raw.split(",").map((s: string) => s.trim()).filter(Boolean);
+                            }
+                          }
+                        }
+                        if (specialities.length === 0) {
+                          return <span className="text-gray-500 text-sm">No specialities listed</span>;
+                        }
+                        return specialities.map((specialty: string) => (
+                          <Badge key={specialty} variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors">
+                            {specialty}
+                          </Badge>
+                        ));
+                      })()}
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-3 pt-2">
+                    <Link href={`/hospitals/${hospital.id}`} legacyBehavior>
+                      <Button className="bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all">
+                        <Heart className="h-4 w-4 mr-2" />
+                        View Details
+                      </Button>
+                    </Link>
+                    <Button 
+                      variant="outline" 
+                      className="border-blue-200 hover:bg-blue-50 bg-transparent shadow-md hover:shadow-lg transition-all"
+                      onClick={() => openGoogleMaps(hospital.address, hospital.name)}
+                    >
+                      <Navigation className="h-4 w-4 mr-2" />
+                      Get Directions
+                    </Button>
+                    <Button variant="outline" className="border-green-200 hover:bg-green-50 bg-transparent shadow-md hover:shadow-lg transition-all">
+                        <Users className="h-4 w-4 mr-2" />
+                        View Doctors
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
             <Card key={hospital.id} className="bg-white border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] group">
               <CardHeader>
                 <div className="flex items-start justify-between">
@@ -216,12 +323,12 @@ export default function HospitalSearch() {
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-3 pt-2">
-                    <Link href={`/hospitals/${hospital.id}`}>
-                      <Button className="bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all">
+                    <Button asChild className="bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all">
+                      <Link href={`/hospitals/${hospital.id}`}>
                         <Heart className="h-4 w-4 mr-2" />
                         View Details
-                      </Button>
-                    </Link>
+                      </Link>
+                    </Button>
                     <Button 
                       variant="outline" 
                       className="border-blue-200 hover:bg-blue-50 bg-transparent shadow-md hover:shadow-lg transition-all"
@@ -254,5 +361,5 @@ export default function HospitalSearch() {
         )}
       </div>
     </div>
-  )
+  );
 }

@@ -2,6 +2,11 @@
 
 import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
+import type { FC } from "react"
+
+interface MedicalStoreSearchProps {
+  initialStores: any[]
+}
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -9,12 +14,10 @@ import { Badge } from "@/components/ui/badge"
 import { MapPin, Phone, Mail, Star, Clock, Shield, Navigation, Pill, Award, CheckCircle } from "lucide-react"
 import Link from "next/link"
 import { useCity } from "@/hooks/city-context"
+import MedicalStoreViewDetailsButton from "@/components/MedicalStoreViewDetailsButton"
 
-
-
-
-export default function MedicalStoreSearch() {
-  const [stores, setStores] = useState<any[]>([])
+const MedicalStoreSearch: FC<MedicalStoreSearchProps> = ({ initialStores }) => {
+  const [stores, setStores] = useState<any[]>(initialStores)
   const [searchTerm, setSearchTerm] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const { city } = useCity()
@@ -37,12 +40,17 @@ export default function MedicalStoreSearch() {
     setIsLoading(false)
   }
 
+
   useEffect(() => {
-    const debounceTimer = setTimeout(() => {
-      searchStores()
-    }, 300)
-    return () => clearTimeout(debounceTimer)
-  }, [searchTerm, city]) // add city to dependencies
+    // Only fetch if searchTerm or city changes (not on mount if no search)
+    if (searchTerm || city) {
+      const debounceTimer = setTimeout(() => {
+        searchStores()
+      }, 300)
+      return () => clearTimeout(debounceTimer)
+    }
+    // eslint-disable-next-line
+  }, [searchTerm, city])
 
   const getOperatingStatus = (operatingHours: string) => {
     if (operatingHours === "24/7") {
@@ -150,7 +158,8 @@ export default function MedicalStoreSearch() {
                         <div className="flex items-center gap-1">
                           <Star className="h-4 w-4 text-yellow-500 fill-current" />
                           <span className="font-medium">{store.rating}</span>
-                          <span className="text-xs text-gray-500">({Math.floor(Math.random() * 300) + 50} reviews)</span>
+                          {/* Use a deterministic review count to avoid hydration mismatch */}
+                          <span className="text-xs text-gray-500">({(typeof store.id === 'number' ? (store.id % 300) + 50 : (store.name?.length ?? 0) + 50)} reviews)</span>
                         </div>
                         <Badge className={operatingStatus.color}>
                           <Clock className="h-3 w-3 mr-1" />
@@ -218,22 +227,7 @@ export default function MedicalStoreSearch() {
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-3 pt-2">
-                      <Link href={`/medical-stores/${store.id}`} passHref legacyBehavior>
-                        <a style={{ textDecoration: 'none' }}>
-                          <Button className="bg-green-600 hover:bg-green-700 shadow-lg hover:shadow-xl transition-all">
-                            <Pill className="h-4 w-4 mr-2" />
-                            View Details
-                          </Button>
-                        </a>
-                      </Link>
-                      <Button
-                        variant="outline"
-                        className="border-green-200 hover:bg-green-50 bg-transparent"
-                        onClick={() => handleCallClick(store.phone)}
-                      >
-                        <Phone className="h-4 w-4 mr-2" />
-                        Call Store
-                      </Button>
+                      <MedicalStoreViewDetailsButton store={store} />
                       <Button
                         variant="outline"
                         className="border-green-200 hover:bg-green-50 bg-transparent"
@@ -273,3 +267,5 @@ export default function MedicalStoreSearch() {
 	</div>
   )
 }
+
+export default MedicalStoreSearch;

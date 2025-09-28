@@ -32,7 +32,6 @@ export default async function HospitalsPage() {
             <h1 className="text-2xl font-bold text-gray-900">Medisphere</h1>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/dashboard">
               <Button variant="ghost" className="text-gray-700 hover:text-blue-600">
                 Dashboard
               </Button>
@@ -40,7 +39,14 @@ export default async function HospitalsPage() {
           </div>
         </div>
       </header>
-
+            <Button asChild variant="ghost" className="text-gray-700 hover:text-blue-600">
+              <Link href="/dashboard">
+                Dashboard
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </header>
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Find Hospitals & Doctors</h2>
@@ -50,5 +56,5 @@ export default async function HospitalsPage() {
   <HospitalSearch />
       </div>
     </div>
-  )
+  );
 }

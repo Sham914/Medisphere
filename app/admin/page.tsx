@@ -77,15 +77,14 @@ export default async function AdminPage() {
             <h1 className="text-2xl font-bold text-gray-900">Medisphere Admin</h1>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/dashboard">
-              <Button variant="ghost" className="text-gray-700 hover:text-indigo-600">
+            <Button asChild variant="ghost" className="text-gray-700 hover:text-indigo-600">
+              <Link href="/dashboard">
                 User Dashboard
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </div>
       </header>
-
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h2>
@@ -110,5 +109,5 @@ export default async function AdminPage() {
         />
       </div>
     </div>
-  )
+  );
 }

@@ -76,16 +76,15 @@ export default async function HospitalDetailPage({ params }: PageProps) {
             <h1 className="text-2xl font-bold text-gray-900">Medisphere</h1>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/hospitals">
-              <Button variant="ghost" className="text-gray-700 hover:text-blue-600">
+            <Button asChild variant="ghost" className="text-gray-700 hover:text-blue-600">
+              <Link href="/hospitals">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Hospitals
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </div>
       </header>
-
       <div className="container mx-auto px-4 py-8">
         {/* Hospital Details */}
         <Card className="bg-gradient-to-br from-white to-blue-50 border-0 shadow-xl mb-8">
@@ -241,5 +240,5 @@ export default async function HospitalDetailPage({ params }: PageProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }
