@@ -131,7 +131,7 @@ export default function MedicineReminders({ initialReminders, userId }: Medicine
         }
         stopAlarm();
         setSosAlert(null);
-      }, 8000);
+      }, 12000);
     } else {
       stopAlarm();
     }
