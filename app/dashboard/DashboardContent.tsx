@@ -18,6 +18,7 @@ import Link from "next/link"
 
 export default function DashboardContent({ profile }: { profile: any }) {
   const { city, setCity, cities } = useCity()
+
   const [counts, setCounts] = useState({
     hospitals: 0,
     doctors: 0,
@@ -169,9 +170,16 @@ export default function DashboardContent({ profile }: { profile: any }) {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                {/* Debug: Show current role */}
+                <div className="px-3 py-1 text-xs text-gray-400">Role: {profile.role || 'unknown'}</div>
                 <DropdownMenuItem asChild>
                   <Link href="/profile">Profile</Link>
                 </DropdownMenuItem>
+                {profile.role === "admin" && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin">Admin Panel</Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem asChild>
                   <form action="/auth/signout" method="post">
                     <button type="submit" className="w-full text-left">Sign Out</button>

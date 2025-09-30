@@ -1,13 +1,17 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import AdminDashboard from "@/components/admin-dashboard"
-import { Heart } from "lucide-react"
+
+import { Heart, Hospital, User, Stethoscope, Store, Droplet, Bell, Syringe } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+
+
 
 export default async function AdminPage() {
   const supabase = await createClient()
-
   const {
     data: { user },
     error,
@@ -15,15 +19,13 @@ export default async function AdminPage() {
   if (error || !user) {
     redirect("/auth/login")
   }
-
-  // Check if user is admin
+  // Check if user is admin based on role in public.profiles
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
-
   if (!profile || profile.role !== "admin") {
     redirect("/dashboard")
   }
 
-  // Get statistics
+  // Fetch all data for dashboard
   const [
     { count: hospitalsCount },
     { count: doctorsCount },
@@ -31,6 +33,13 @@ export default async function AdminPage() {
     { count: usersCount },
     { count: bloodRequestsCount },
     { count: donorsCount },
+    { data: hospitals },
+    { data: doctors },
+    { data: stores },
+    { data: users },
+    { data: bloodRequests },
+    { data: bloodDonors },
+    { data: reminders },
   ] = await Promise.all([
     supabase.from("hospitals").select("*", { count: "exact", head: true }),
     supabase.from("doctors").select("*", { count: "exact", head: true }),
@@ -38,32 +47,47 @@ export default async function AdminPage() {
     supabase.from("profiles").select("*", { count: "exact", head: true }),
     supabase.from("blood_requests").select("*", { count: "exact", head: true }),
     supabase.from("blood_donors").select("*", { count: "exact", head: true }),
+    supabase.from("hospitals").select("*"),
+    supabase.from("doctors").select("*, hospitals(name)"),
+    supabase.from("medical_stores").select("*"),
+    supabase.from("profiles").select("*"),
+    supabase.from("blood_requests").select("*"),
+    supabase.from("blood_donors").select("*"),
+    supabase.from("reminders").select("*")
   ])
 
-  // Get recent data
-  const { data: recentHospitals } = await supabase
-    .from("hospitals")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(5)
+  // Helper for medicine badge
+  function getMedicineBadge(status: string) {
+    switch (status) {
+      case "available":
+        return <Badge className="bg-green-100 text-green-700">Available</Badge>;
+      case "low_stock":
+        return <Badge className="bg-yellow-100 text-yellow-700">Low Stock</Badge>;
+      case "out_of_stock":
+        return <Badge className="bg-red-100 text-red-700">Out of Stock</Badge>;
+      default:
+        return <Badge className="bg-gray-100 text-gray-700">Unknown</Badge>;
+    }
+  }
 
-  const { data: recentDoctors } = await supabase
-    .from("doctors")
-    .select("*, hospitals(name)")
-    .order("created_at", { ascending: false })
-    .limit(5)
-
-  const { data: recentStores } = await supabase
-    .from("medical_stores")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(5)
-
-  const { data: recentUsers } = await supabase
-    .from("profiles")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(5)
+  // Chart data
+  const chartData = {
+    labels: ["Hospitals", "Doctors", "Medical Stores", "Users", "Blood Requests", "Donors"],
+    datasets: [
+      {
+        label: "Count",
+        data: [hospitalsCount, doctorsCount, medicalStoresCount, usersCount, bloodRequestsCount, donorsCount],
+        backgroundColor: [
+          "#6366f1",
+          "#818cf8",
+          "#a5b4fc",
+          "#fbbf24",
+          "#f87171",
+          "#34d399",
+        ],
+      },
+    ],
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100">
@@ -78,9 +102,7 @@ export default async function AdminPage() {
           </div>
           <div className="flex items-center gap-4">
             <Button asChild variant="ghost" className="text-gray-700 hover:text-indigo-600">
-              <Link href="/dashboard">
-                User Dashboard
-              </Link>
+              <Link href="/dashboard">User Dashboard</Link>
             </Button>
           </div>
         </div>
@@ -88,26 +110,331 @@ export default async function AdminPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h2>
-          <p className="text-gray-600">Manage hospitals, doctors, medical stores, and platform data</p>
+          <p className="text-gray-600">Manage all platform data, users, and resources visually</p>
+          <div className="flex flex-row gap-6 mt-8 justify-start flex-wrap">
+            <Card className="min-w-[140px] p-4 flex flex-col items-center bg-indigo-50 border-0">
+              <Hospital className="text-indigo-600 mb-1" />
+              <span className="font-bold text-2xl">{hospitalsCount}</span>
+              <span className="text-xs text-gray-500">Hospitals</span>
+            </Card>
+            <Card className="min-w-[140px] p-4 flex flex-col items-center bg-indigo-50 border-0">
+              <Stethoscope className="text-indigo-600 mb-1" />
+              <span className="font-bold text-2xl">{doctorsCount}</span>
+              <span className="text-xs text-gray-500">Doctors</span>
+            </Card>
+            <Card className="min-w-[140px] p-4 flex flex-col items-center bg-indigo-50 border-0">
+              <Store className="text-indigo-600 mb-1" />
+              <span className="font-bold text-2xl">{medicalStoresCount}</span>
+              <span className="text-xs text-gray-500">Medical Stores</span>
+            </Card>
+            <Card className="min-w-[140px] p-4 flex flex-col items-center bg-indigo-50 border-0">
+              <User className="text-indigo-600 mb-1" />
+              <span className="font-bold text-2xl">{usersCount}</span>
+              <span className="text-xs text-gray-500">Users</span>
+            </Card>
+            <Card className="min-w-[140px] p-4 flex flex-col items-center bg-indigo-50 border-0">
+              <Droplet className="text-indigo-600 mb-1" />
+              <span className="font-bold text-2xl">{bloodRequestsCount}</span>
+              <span className="text-xs text-gray-500">Blood Requests</span>
+            </Card>
+            <Card className="min-w-[140px] p-4 flex flex-col items-center bg-indigo-50 border-0">
+              <Syringe className="text-indigo-600 mb-1" />
+              <span className="font-bold text-2xl">{donorsCount}</span>
+              <span className="text-xs text-gray-500">Donors</span>
+            </Card>
+          </div>
         </div>
-
-        <AdminDashboard
-          stats={{
-            hospitals: hospitalsCount || 0,
-            doctors: doctorsCount || 0,
-            medicalStores: medicalStoresCount || 0,
-            users: usersCount || 0,
-            bloodRequests: bloodRequestsCount || 0,
-            donors: donorsCount || 0,
-          }}
-          recentData={{
-            hospitals: recentHospitals || [],
-            doctors: recentDoctors || [],
-            stores: recentStores || [],
-            users: recentUsers || [],
-          }}
-        />
+        {/* Tabs for each model */}
+        <Tabs defaultValue="hospitals" className="w-full mt-8">
+          <TabsList className="flex flex-wrap gap-2 bg-indigo-100">
+            <TabsTrigger value="hospitals">Hospitals</TabsTrigger>
+            <TabsTrigger value="doctors">Doctors</TabsTrigger>
+            <TabsTrigger value="stores">Medical Stores</TabsTrigger>
+            <TabsTrigger value="users">Users</TabsTrigger>
+            <TabsTrigger value="blood">Blood Requests</TabsTrigger>
+            <TabsTrigger value="donors">Blood Donors</TabsTrigger>
+            <TabsTrigger value="reminders">Reminders</TabsTrigger>
+          </TabsList>
+          {/* Hospitals Tab */}
+          <TabsContent value="hospitals">
+            <Card className="mt-4">
+              <CardHeader>
+                <CardTitle>Hospitals</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-sm">
+                    <thead>
+                      <tr className="bg-indigo-50">
+                        <th className="p-2">Name</th>
+                        <th className="p-2">Location</th>
+                        <th className="p-2">Created</th>
+                        <th className="p-2">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {hospitals?.map(h => (
+                        <tr key={h.id} className="border-b">
+                          <td className="p-2 font-medium">{h.name}</td>
+                          <td className="p-2">{h.location}</td>
+                          <td className="p-2">{new Date(h.created_at).toLocaleDateString()}</td>
+                          <td className="p-2 flex gap-2">
+                            <Button size="sm" variant="outline">Edit</Button>
+                            <Button size="sm" variant="destructive">Delete</Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          {/* Doctors Tab */}
+          <TabsContent value="doctors">
+            <Card className="mt-4">
+              <CardHeader>
+                <CardTitle>Doctors</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-sm">
+                    <thead>
+                      <tr className="bg-indigo-50">
+                        <th className="p-2">Name</th>
+                        <th className="p-2">Specialty</th>
+                        <th className="p-2">Hospital</th>
+                        <th className="p-2">Created</th>
+                        <th className="p-2">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {doctors?.map(d => (
+                        <tr key={d.id} className="border-b">
+                          <td className="p-2 font-medium">{d.name}</td>
+                          <td className="p-2">{d.specialty}</td>
+                          <td className="p-2">{d.hospitals?.name}</td>
+                          <td className="p-2">{new Date(d.created_at).toLocaleDateString()}</td>
+                          <td className="p-2 flex gap-2">
+                            <Button size="sm" variant="outline">Edit</Button>
+                            <Button size="sm" variant="destructive">Delete</Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          {/* Medical Stores Tab */}
+          <TabsContent value="stores">
+            <Card className="mt-4">
+              <CardHeader>
+                <CardTitle>Medical Stores</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-sm">
+                    <thead>
+                      <tr className="bg-indigo-50">
+                        <th className="p-2">Name</th>
+                        <th className="p-2">Location</th>
+                        <th className="p-2">Medicines</th>
+                        <th className="p-2">Created</th>
+                        <th className="p-2">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {stores?.map(s => (
+                        <tr key={s.id} className="border-b">
+                          <td className="p-2 font-medium">{s.name}</td>
+                          <td className="p-2">{s.location}</td>
+                          <td className="p-2">
+                            <div className="flex flex-col gap-1">
+                              {Array.isArray(s.medicines) && s.medicines?.length > 0 ? (
+                                s.medicines?.map((m: { name: string; status: string }, idx: number) => (
+                                  <div key={idx} className="flex items-center gap-2">
+                                    <span className="font-medium">{m.name}</span>
+                                    {getMedicineBadge(m.status)}
+                                  </div>
+                                ))
+                              ) : (
+                                <span className="text-gray-400">No medicines</span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="p-2">{new Date(s.created_at).toLocaleDateString()}</td>
+                          <td className="p-2 flex gap-2">
+                            <Button size="sm" variant="outline">Edit</Button>
+                            <Button size="sm" variant="destructive">Delete</Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          {/* Users Tab */}
+          <TabsContent value="users">
+            <Card className="mt-4">
+              <CardHeader>
+                <CardTitle>Users</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-sm">
+                    <thead>
+                      <tr className="bg-indigo-50">
+                        <th className="p-2">Name</th>
+                        <th className="p-2">Email</th>
+                        <th className="p-2">Role</th>
+                        <th className="p-2">Created</th>
+                        <th className="p-2">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {users?.map(u => (
+                        <tr key={u.id} className="border-b">
+                          <td className="p-2 font-medium">{u.full_name || u.name || u.email}</td>
+                          <td className="p-2">{u.email}</td>
+                          <td className="p-2">
+                            <Badge className={u.role === "admin" ? "bg-indigo-100 text-indigo-700" : "bg-gray-100 text-gray-700"}>{u.role}</Badge>
+                          </td>
+                          <td className="p-2">{new Date(u.created_at).toLocaleDateString()}</td>
+                          <td className="p-2 flex gap-2">
+                            <Button size="sm" variant="outline">Edit</Button>
+                            <Button size="sm" variant="destructive">Delete</Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          {/* Blood Requests Tab */}
+          <TabsContent value="blood">
+            <Card className="mt-4">
+              <CardHeader>
+                <CardTitle>Blood Requests</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-sm">
+                    <thead>
+                      <tr className="bg-indigo-50">
+                        <th className="p-2">Patient</th>
+                        <th className="p-2">Blood Group</th>
+                        <th className="p-2">Hospital</th>
+                        <th className="p-2">Status</th>
+                        <th className="p-2">Created</th>
+                        <th className="p-2">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {bloodRequests?.map(b => (
+                        <tr key={b.id} className="border-b">
+                          <td className="p-2 font-medium">{b.patient_name}</td>
+                          <td className="p-2">{b.blood_group}</td>
+                          <td className="p-2">{b.hospital_name}</td>
+                          <td className="p-2">{b.status}</td>
+                          <td className="p-2">{new Date(b.created_at).toLocaleDateString()}</td>
+                          <td className="p-2 flex gap-2">
+                            <Button size="sm" variant="outline">Edit</Button>
+                            <Button size="sm" variant="destructive">Delete</Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          {/* Blood Donors Tab */}
+          <TabsContent value="donors">
+            <Card className="mt-4">
+              <CardHeader>
+                <CardTitle>Blood Donors</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-sm">
+                    <thead>
+                      <tr className="bg-indigo-50">
+                        <th className="p-2">Name</th>
+                        <th className="p-2">Blood Group</th>
+                        <th className="p-2">Location</th>
+                        <th className="p-2">Contact</th>
+                        <th className="p-2">Created</th>
+                        <th className="p-2">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {bloodDonors?.map(d => (
+                        <tr key={d.id} className="border-b">
+                          <td className="p-2 font-medium">{d.name}</td>
+                          <td className="p-2">{d.blood_group}</td>
+                          <td className="p-2">{d.location}</td>
+                          <td className="p-2">{d.contact}</td>
+                          <td className="p-2">{new Date(d.created_at).toLocaleDateString()}</td>
+                          <td className="p-2 flex gap-2">
+                            <Button size="sm" variant="outline">Edit</Button>
+                            <Button size="sm" variant="destructive">Delete</Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          {/* Reminders Tab */}
+          <TabsContent value="reminders">
+            <Card className="mt-4">
+              <CardHeader>
+                <CardTitle>Medicine Reminders</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-sm">
+                    <thead>
+                      <tr className="bg-indigo-50">
+                        <th className="p-2">User</th>
+                        <th className="p-2">Medicine</th>
+                        <th className="p-2">Time</th>
+                        <th className="p-2">Status</th>
+                        <th className="p-2">Created</th>
+                        <th className="p-2">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {reminders?.map(r => (
+                        <tr key={r.id} className="border-b">
+                          <td className="p-2 font-medium">{r.user_id}</td>
+                          <td className="p-2">{r.medicine_name}</td>
+                          <td className="p-2">{r.time}</td>
+                          <td className="p-2">{r.status}</td>
+                          <td className="p-2">{new Date(r.created_at).toLocaleDateString()}</td>
+                          <td className="p-2 flex gap-2">
+                            <Button size="sm" variant="outline">Edit</Button>
+                            <Button size="sm" variant="destructive">Delete</Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
-  );
+  )
 }

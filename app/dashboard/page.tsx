@@ -14,10 +14,16 @@ export default async function DashboardPage() {
     redirect("/auth/login")
   }
 
-  const profile = {
-    full_name: user.user_metadata?.full_name || user.email?.split("@")[0] || "User",
-    email: user.email,
-    avatar_url: user.user_metadata?.avatar_url || "/placeholder-user.jpg",
+  // Fetch the full profile from public.profiles
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+
+  // Optionally handle missing profile (shouldn't happen if triggers are set up)
+  if (!profile) {
+    redirect("/auth/login");
   }
 
   return <DashboardContent profile={profile} />

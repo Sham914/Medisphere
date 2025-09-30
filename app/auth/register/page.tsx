@@ -119,18 +119,7 @@ export default function RegisterPage() {
                   className="h-11"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="role">Account Type</Label>
-                <Select value={formData.role} onValueChange={(value) => handleInputChange("role", value)}>
-                  <SelectTrigger className="h-11">
-                    <SelectValue placeholder="Select account type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="user">Patient/User</SelectItem>
-                    <SelectItem value="admin">Healthcare Administrator</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <Input
