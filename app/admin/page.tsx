@@ -36,10 +36,9 @@ export default async function AdminPage() {
     { data: hospitals },
     { data: doctors },
     { data: stores },
-    { data: users },
+    { data: allUsers },
     { data: bloodRequests },
     { data: bloodDonors },
-    { data: reminders },
   ] = await Promise.all([
     supabase.from("hospitals").select("*", { count: "exact", head: true }),
     supabase.from("doctors").select("*", { count: "exact", head: true }),
@@ -52,8 +51,7 @@ export default async function AdminPage() {
     supabase.from("medical_stores").select("*"),
     supabase.from("profiles").select("*"),
     supabase.from("blood_requests").select("*"),
-    supabase.from("blood_donors").select("*"),
-    supabase.from("reminders").select("*")
+    supabase.from("blood_donors").select("*")
   ])
 
   // Helper for medicine badge
@@ -146,14 +144,13 @@ export default async function AdminPage() {
         </div>
         {/* Tabs for each model */}
         <Tabs defaultValue="hospitals" className="w-full mt-8">
-          <TabsList className="flex flex-wrap gap-2 bg-indigo-100">
-            <TabsTrigger value="hospitals">Hospitals</TabsTrigger>
-            <TabsTrigger value="doctors">Doctors</TabsTrigger>
-            <TabsTrigger value="stores">Medical Stores</TabsTrigger>
-            <TabsTrigger value="users">Users</TabsTrigger>
-            <TabsTrigger value="blood">Blood Requests</TabsTrigger>
-            <TabsTrigger value="donors">Blood Donors</TabsTrigger>
-            <TabsTrigger value="reminders">Reminders</TabsTrigger>
+          <TabsList className="w-full flex flex-wrap gap-2 bg-indigo-100 rounded-2xl overflow-x-auto justify-between">
+            <TabsTrigger value="hospitals" className="flex-1 min-w-[120px]">Hospitals</TabsTrigger>
+            <TabsTrigger value="doctors" className="flex-1 min-w-[120px]">Doctors</TabsTrigger>
+            <TabsTrigger value="stores" className="flex-1 min-w-[120px]">Medical Stores</TabsTrigger>
+            <TabsTrigger value="users" className="flex-1 min-w-[120px]">Users</TabsTrigger>
+            <TabsTrigger value="blood" className="flex-1 min-w-[120px]">Blood Requests</TabsTrigger>
+            <TabsTrigger value="donors" className="flex-1 min-w-[120px]">Blood Donors</TabsTrigger>
           </TabsList>
           {/* Hospitals Tab */}
           <TabsContent value="hospitals">
@@ -292,22 +289,17 @@ export default async function AdminPage() {
                         <th className="p-2">Email</th>
                         <th className="p-2">Role</th>
                         <th className="p-2">Created</th>
-                        <th className="p-2">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {users?.map(u => (
+                      {allUsers?.map(u => (
                         <tr key={u.id} className="border-b">
                           <td className="p-2 font-medium">{u.full_name || u.name || u.email}</td>
                           <td className="p-2">{u.email}</td>
                           <td className="p-2">
                             <Badge className={u.role === "admin" ? "bg-indigo-100 text-indigo-700" : "bg-gray-100 text-gray-700"}>{u.role}</Badge>
                           </td>
-                          <td className="p-2">{new Date(u.created_at).toLocaleDateString()}</td>
-                          <td className="p-2 flex gap-2">
-                            <Button size="sm" variant="outline">Edit</Button>
-                            <Button size="sm" variant="destructive">Delete</Button>
-                          </td>
+                          <td className="p-2">{u.created_at ? new Date(u.created_at).toLocaleDateString() : "-"}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -382,45 +374,6 @@ export default async function AdminPage() {
                           <td className="p-2">{d.location}</td>
                           <td className="p-2">{d.contact}</td>
                           <td className="p-2">{new Date(d.created_at).toLocaleDateString()}</td>
-                          <td className="p-2 flex gap-2">
-                            <Button size="sm" variant="outline">Edit</Button>
-                            <Button size="sm" variant="destructive">Delete</Button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          {/* Reminders Tab */}
-          <TabsContent value="reminders">
-            <Card className="mt-4">
-              <CardHeader>
-                <CardTitle>Medicine Reminders</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="min-w-full text-sm">
-                    <thead>
-                      <tr className="bg-indigo-50">
-                        <th className="p-2">User</th>
-                        <th className="p-2">Medicine</th>
-                        <th className="p-2">Time</th>
-                        <th className="p-2">Status</th>
-                        <th className="p-2">Created</th>
-                        <th className="p-2">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {reminders?.map(r => (
-                        <tr key={r.id} className="border-b">
-                          <td className="p-2 font-medium">{r.user_id}</td>
-                          <td className="p-2">{r.medicine_name}</td>
-                          <td className="p-2">{r.time}</td>
-                          <td className="p-2">{r.status}</td>
-                          <td className="p-2">{new Date(r.created_at).toLocaleDateString()}</td>
                           <td className="p-2 flex gap-2">
                             <Button size="sm" variant="outline">Edit</Button>
                             <Button size="sm" variant="destructive">Delete</Button>
