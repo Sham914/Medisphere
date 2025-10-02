@@ -36,23 +36,46 @@ export default async function AdminPage() {
     { data: hospitals },
     { data: doctors },
     { data: stores },
-    { data: allUsers },
     { data: bloodRequests },
     { data: bloodDonors },
   ] = await Promise.all([
     supabase.from("hospitals").select("*", { count: "exact", head: true }),
     supabase.from("doctors").select("*", { count: "exact", head: true }),
     supabase.from("medical_stores").select("*", { count: "exact", head: true }),
-    supabase.from("profiles").select("*", { count: "exact", head: true }),
+    supabase.from("users").select("*", { count: "exact", head: true }),
     supabase.from("blood_requests").select("*", { count: "exact", head: true }),
     supabase.from("blood_donors").select("*", { count: "exact", head: true }),
     supabase.from("hospitals").select("*"),
     supabase.from("doctors").select("*, hospitals(name)"),
     supabase.from("medical_stores").select("*"),
-    supabase.from("profiles").select("*"),
     supabase.from("blood_requests").select("*"),
     supabase.from("blood_donors").select("*")
   ])
+
+  // Fetch users from public.users
+  type UserRow = {
+    id: string;
+    email: string;
+    full_name: string | null;
+    created_at: string;
+    role: string;
+  };
+  let allUsers: UserRow[] = [];
+  let usersError: string | null = null;
+  try {
+    const { data, error } = await supabase.from("users").select("id, email, full_name, created_at, role");
+    if (error) {
+      usersError = error.message;
+    } else if (data) {
+      allUsers = data as UserRow[];
+    }
+  } catch (e) {
+    if (e instanceof Error) {
+      usersError = e.message;
+    } else {
+      usersError = "Unknown error fetching users.";
+    }
+  }
 
   // Helper for medicine badge
   function getMedicineBadge(status: string) {
@@ -281,30 +304,34 @@ export default async function AdminPage() {
                 <CardTitle>Users</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="min-w-full text-sm">
-                    <thead>
-                      <tr className="bg-indigo-50">
-                        <th className="p-2">Name</th>
-                        <th className="p-2">Email</th>
-                        <th className="p-2">Role</th>
-                        <th className="p-2">Created</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {allUsers?.map(u => (
-                        <tr key={u.id} className="border-b">
-                          <td className="p-2 font-medium">{u.full_name || u.name || u.email}</td>
-                          <td className="p-2">{u.email}</td>
-                          <td className="p-2">
-                            <Badge className={u.role === "admin" ? "bg-indigo-100 text-indigo-700" : "bg-gray-100 text-gray-700"}>{u.role}</Badge>
-                          </td>
-                          <td className="p-2">{u.created_at ? new Date(u.created_at).toLocaleDateString() : "-"}</td>
+                {usersError ? (
+                  <div className="text-red-600 font-semibold">Error fetching users: {usersError}</div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full text-sm">
+                      <thead>
+                        <tr className="bg-indigo-50">
+                          <th className="p-2">Email</th>
+                          <th className="p-2">Full Name</th>
+                          <th className="p-2">Role</th>
+                          <th className="p-2">Created</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody>
+                        {allUsers?.map((u: UserRow) => (
+                          <tr key={u.id} className="border-b">
+                            <td className="p-2">{u.email}</td>
+                            <td className="p-2">{u.full_name || '-'}</td>
+                            <td className="p-2">
+                              <Badge className={u.role === "admin" ? "bg-indigo-100 text-indigo-700" : "bg-gray-100 text-gray-700"}>{u.role}</Badge>
+                            </td>
+                            <td className="p-2">{u.created_at ? new Date(u.created_at).toLocaleDateString() : "-"}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
