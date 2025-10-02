@@ -196,7 +196,7 @@ export default async function AdminPage() {
                       {hospitals?.map(h => (
                         <tr key={h.id} className="border-b">
                           <td className="p-2 font-medium">{h.name}</td>
-                          <td className="p-2">{h.location}</td>
+                          <td className="p-2">{h.city}</td>
                           <td className="p-2">{new Date(h.created_at).toLocaleDateString()}</td>
                           <td className="p-2 flex gap-2">
                             <Button size="sm" variant="outline">Edit</Button>
@@ -232,7 +232,7 @@ export default async function AdminPage() {
                       {doctors?.map(d => (
                         <tr key={d.id} className="border-b">
                           <td className="p-2 font-medium">{d.name}</td>
-                          <td className="p-2">{d.specialty}</td>
+                          <td className="p-2">{d.specialization}</td>
                           <td className="p-2">{d.hospitals?.name}</td>
                           <td className="p-2">{new Date(d.created_at).toLocaleDateString()}</td>
                           <td className="p-2 flex gap-2">
@@ -269,7 +269,7 @@ export default async function AdminPage() {
                       {stores?.map(s => (
                         <tr key={s.id} className="border-b">
                           <td className="p-2 font-medium">{s.name}</td>
-                          <td className="p-2">{s.location}</td>
+                          <td className="p-2">{s.city}</td>
                           <td className="p-2">
                             <div className="flex flex-col gap-1">
                               {Array.isArray(s.medicines) && s.medicines?.length > 0 ? (
@@ -358,7 +358,7 @@ export default async function AdminPage() {
                       {bloodRequests?.map(b => (
                         <tr key={b.id} className="border-b">
                           <td className="p-2 font-medium">{b.patient_name}</td>
-                          <td className="p-2">{b.blood_group}</td>
+                          <td className="p-2">{b.blood_type}</td>
                           <td className="p-2">{b.hospital_name}</td>
                           <td className="p-2">{b.status}</td>
                           <td className="p-2">{new Date(b.created_at).toLocaleDateString()}</td>
@@ -397,9 +397,9 @@ export default async function AdminPage() {
                       {bloodDonors?.map(d => (
                         <tr key={d.id} className="border-b">
                           <td className="p-2 font-medium">{d.name}</td>
-                          <td className="p-2">{d.blood_group}</td>
+                          <td className="p-2">{d.blood_type}</td>
                           <td className="p-2">{d.location}</td>
-                          <td className="p-2">{d.contact}</td>
+                          <td className="p-2">{d.emergency_contact}</td>
                           <td className="p-2">{new Date(d.created_at).toLocaleDateString()}</td>
                           <td className="p-2 flex gap-2">
                             <Button size="sm" variant="outline">Edit</Button>
