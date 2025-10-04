@@ -66,30 +66,23 @@ export async function updateHospital(
   try {
     const supabase = createServiceRoleClient()
     
-    const { error: updateError } = await supabase
+    // Update and fetch in one query for better performance
+    const { data, error } = await supabase
       .from("hospitals")
       .update(hospitalData)
       .eq("id", id)
-
-    if (updateError) throw updateError
-    
-    const { data: updatedRow, error: fetchError } = await supabase
-      .from("hospitals")
-      .select("*")
-      .eq("id", id)
+      .select()
       .single()
+
+    if (error) throw error
     
-    if (fetchError) throw fetchError
-    
-    revalidatePath("/admin")
-    return { success: true, data: [updatedRow] }
+    revalidatePath("/admin", "page")
+    return { success: true, data: [data] }
   } catch (error) {
-    console.error("Error updating hospital - Full error:", error)
-    console.error("Error type:", typeof error)
-    console.error("Error details:", JSON.stringify(error, null, 2))
+    console.error("Error updating hospital:", error)
     return { 
       success: false, 
-      error: error instanceof Error ? error.message : (typeof error === 'string' ? error : JSON.stringify(error))
+      error: error instanceof Error ? error.message : "Failed to update hospital"
     }
   }
 }
@@ -100,7 +93,7 @@ export async function deleteHospital(id: string) {
     const { error } = await supabase.from("hospitals").delete().eq("id", id)
 
     if (error) throw error
-    revalidatePath("/admin")
+    revalidatePath("/admin", "page")
     return { success: true }
   } catch (error) {
     console.error("Error deleting hospital:", error)
@@ -153,23 +146,16 @@ export async function updateDoctor(
   try {
     const supabase = createServiceRoleClient()
     
-    const { error: updateError } = await supabase
+    const { data, error } = await supabase
       .from("doctors")
       .update(doctorData)
       .eq("id", id)
-
-    if (updateError) throw updateError
-    
-    const { data: updatedRow, error: fetchError } = await supabase
-      .from("doctors")
-      .select("*")
-      .eq("id", id)
+      .select()
       .single()
     
-    if (fetchError) throw fetchError
-    
-    revalidatePath("/admin")
-    return { success: true, data: [updatedRow] }
+    if (error) throw error
+    revalidatePath("/admin", "page")
+    return { success: true, data: [data] }
   } catch (error) {
     console.error("Error updating doctor:", error)
     return { success: false, error: error instanceof Error ? error.message : "Unknown error" }
@@ -182,7 +168,7 @@ export async function deleteDoctor(id: string) {
     const { error } = await supabase.from("doctors").delete().eq("id", id)
 
     if (error) throw error
-    revalidatePath("/admin")
+    revalidatePath("/admin", "page")
     return { success: true }
   } catch (error) {
     console.error("Error deleting doctor:", error)
@@ -233,23 +219,16 @@ export async function updateMedicalStore(
   try {
     const supabase = createServiceRoleClient()
     
-    const { error: updateError } = await supabase
+    const { data, error } = await supabase
       .from("medical_stores")
       .update(storeData)
       .eq("id", id)
-
-    if (updateError) throw updateError
-    
-    const { data: updatedRow, error: fetchError } = await supabase
-      .from("medical_stores")
-      .select("*")
-      .eq("id", id)
+      .select()
       .single()
     
-    if (fetchError) throw fetchError
-    
-    revalidatePath("/admin")
-    return { success: true, data: [updatedRow] }
+    if (error) throw error
+    revalidatePath("/admin", "page")
+    return { success: true, data: [data] }
   } catch (error) {
     console.error("Error updating medical store:", error)
     return { success: false, error: error instanceof Error ? error.message : "Unknown error" }
@@ -262,7 +241,7 @@ export async function deleteMedicalStore(id: string) {
     const { error } = await supabase.from("medical_stores").delete().eq("id", id)
 
     if (error) throw error
-    revalidatePath("/admin")
+    revalidatePath("/admin", "page")
     return { success: true }
   } catch (error) {
     console.error("Error deleting medical store:", error)
@@ -314,23 +293,16 @@ export async function updateBloodDonor(
   try {
     const supabase = createServiceRoleClient()
     
-    const { error: updateError } = await supabase
+    const { data, error } = await supabase
       .from("blood_donors")
       .update(donorData)
       .eq("id", id)
-
-    if (updateError) throw updateError
-    
-    const { data: updatedRow, error: fetchError } = await supabase
-      .from("blood_donors")
-      .select("*")
-      .eq("id", id)
+      .select()
       .single()
     
-    if (fetchError) throw fetchError
-    
-    revalidatePath("/admin")
-    return { success: true, data: [updatedRow] }
+    if (error) throw error
+    revalidatePath("/admin", "page")
+    return { success: true, data: [data] }
   } catch (error) {
     console.error("Error updating blood donor:", error)
     return { success: false, error: error instanceof Error ? error.message : "Unknown error" }
@@ -343,7 +315,7 @@ export async function deleteBloodDonor(id: string) {
     const { error } = await supabase.from("blood_donors").delete().eq("id", id)
 
     if (error) throw error
-    revalidatePath("/admin")
+    revalidatePath("/admin", "page")
     return { success: true }
   } catch (error) {
     console.error("Error deleting blood donor:", error)
@@ -399,23 +371,16 @@ export async function updateBloodRequest(
   try {
     const supabase = createServiceRoleClient()
     
-    const { error: updateError } = await supabase
+    const { data, error } = await supabase
       .from("blood_requests")
       .update(requestData)
       .eq("id", id)
-
-    if (updateError) throw updateError
-    
-    const { data: updatedRow, error: fetchError } = await supabase
-      .from("blood_requests")
-      .select("*")
-      .eq("id", id)
+      .select()
       .single()
     
-    if (fetchError) throw fetchError
-    
-    revalidatePath("/admin")
-    return { success: true, data: [updatedRow] }
+    if (error) throw error
+    revalidatePath("/admin", "page")
+    return { success: true, data: [data] }
   } catch (error) {
     console.error("Error updating blood request:", error)
     return { success: false, error: error instanceof Error ? error.message : "Unknown error" }
@@ -428,7 +393,7 @@ export async function deleteBloodRequest(id: string) {
     const { error } = await supabase.from("blood_requests").delete().eq("id", id)
 
     if (error) throw error
-    revalidatePath("/admin")
+    revalidatePath("/admin", "page")
     return { success: true }
   } catch (error) {
     console.error("Error deleting blood request:", error)
@@ -597,4 +562,6 @@ export async function getAllData() {
     return { success: false, error: error instanceof Error ? error.message : "Unknown error" }
   }
 }
+
+
 

@@ -1,14 +1,18 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-
+import { Suspense } from "react"
 import { Heart, Hospital, User, Stethoscope, Store, Droplet, Bell, Syringe } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
 import AdminDataManager from "@/components/AdminDataManager"
 
+// Disable caching for admin page to always show fresh data
+export const revalidate = 0
+export const dynamic = 'force-dynamic'
 
 export default async function AdminPage() {
   const supabase = await createClient()

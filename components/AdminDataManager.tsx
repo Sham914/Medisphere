@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useTransition, useMemo, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -30,11 +30,11 @@ interface AdminDataManagerProps {
   displayName?: string
 }
 
-export default function AdminDataManager({ table, row, displayName }: AdminDataManagerProps) {
+const AdminDataManager = React.memo(function AdminDataManager({ table, row, displayName }: AdminDataManagerProps) {
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
   const [formData, setFormData] = useState<Record<string, any>>(row)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isPending, startTransition] = useTransition()
   const router = useRouter()
 
   // Map display table names to actual database table names
@@ -50,20 +50,19 @@ export default function AdminDataManager({ table, row, displayName }: AdminDataM
     return tableMap[table] || table
   }
 
-  // Get fields to exclude from editing
-  const getExcludedFields = () => {
+  // Get fields to exclude from editing - memoized to prevent recalculation
+  const excludedFields = useMemo(() => {
     return ["id", "created_at", "updated_at", "user_id", "hospitals", "requester_id"]
-  }
+  }, [])
 
-  // Get display name for the record
-  const getRecordName = () => {
+  // Get display name for the record - memoized
+  const recordName = useMemo(() => {
     if (displayName) return displayName
     return row.name || row.patient_name || row.full_name || row.email || "this record"
-  }
+  }, [displayName, row.name, row.patient_name, row.full_name, row.email])
 
-  // Handle field rendering based on type
-  const renderField = (key: string, value: any) => {
-    const excludedFields = getExcludedFields()
+  // Handle field rendering based on type - memoized with useCallback
+  const renderField = useCallback((key: string, value: any) => {
     if (excludedFields.includes(key)) return null
 
     // Handle boolean fields
@@ -186,12 +185,11 @@ export default function AdminDataManager({ table, row, displayName }: AdminDataM
         />
       </div>
     )
-  }
+  }, [excludedFields, formData])
 
   // Handle edit submit
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
 
     try {
       // Remove excluded fields and nested objects
@@ -232,13 +230,17 @@ export default function AdminDataManager({ table, row, displayName }: AdminDataM
 
       if (!result.success) throw new Error(result.error)
 
-      toast({
-        title: "Success",
-        description: `${getRecordName()} has been updated successfully!`,
+      setIsEditOpen(false)
+      
+      // Use startTransition for smooth UI updates
+      startTransition(() => {
+        router.refresh()
       })
 
-      setIsEditOpen(false)
-      router.refresh()
+      toast({
+        title: "Success",
+        description: `${recordName} has been updated successfully!`,
+      })
     } catch (error: any) {
       console.error("Error updating record:", error)
       toast({
@@ -246,15 +248,11 @@ export default function AdminDataManager({ table, row, displayName }: AdminDataM
         description: error.message || "Failed to update record. Please try again.",
         variant: "destructive",
       })
-    } finally {
-      setIsLoading(false)
     }
   }
 
   // Handle delete confirm
   const handleDeleteConfirm = async () => {
-    setIsLoading(true)
-
     try {
       let result
 
@@ -281,13 +279,17 @@ export default function AdminDataManager({ table, row, displayName }: AdminDataM
 
       if (!result.success) throw new Error(result.error)
 
-      toast({
-        title: "Deleted",
-        description: `${getRecordName()} has been deleted successfully!`,
+      setIsDeleteOpen(false)
+      
+      // Use startTransition for smooth UI updates
+      startTransition(() => {
+        router.refresh()
       })
 
-      setIsDeleteOpen(false)
-      router.refresh()
+      toast({
+        title: "Deleted",
+        description: `${recordName} has been deleted successfully!`,
+      })
     } catch (error: any) {
       console.error("Error deleting record:", error)
       toast({
@@ -295,8 +297,6 @@ export default function AdminDataManager({ table, row, displayName }: AdminDataM
         description: error.message || "Failed to delete record. Please try again.",
         variant: "destructive",
       })
-    } finally {
-      setIsLoading(false)
     }
   }
 
@@ -329,7 +329,7 @@ export default function AdminDataManager({ table, row, displayName }: AdminDataM
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Edit {getRecordName()}</DialogTitle>
+            <DialogTitle>Edit {recordName}</DialogTitle>
             <DialogDescription>
               Make changes to the record below. Click save when you're done.
             </DialogDescription>
@@ -337,7 +337,7 @@ export default function AdminDataManager({ table, row, displayName }: AdminDataM
           <form onSubmit={handleEditSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {Object.keys(row)
-                .filter((key) => !getExcludedFields().includes(key))
+                .filter((key) => !excludedFields.includes(key))
                 .map((key) => renderField(key, row[key]))}
             </div>
             <DialogFooter className="gap-2">
@@ -345,12 +345,12 @@ export default function AdminDataManager({ table, row, displayName }: AdminDataM
                 type="button"
                 variant="outline"
                 onClick={() => setIsEditOpen(false)}
-                disabled={isLoading}
+                disabled={isPending}
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isLoading} className="bg-blue-600 hover:bg-blue-700">
-                {isLoading ? "Saving..." : "Save Changes"}
+              <Button type="submit" disabled={isPending} className="bg-blue-600 hover:bg-blue-700">
+                {isPending ? "Saving..." : "Save Changes"}
               </Button>
             </DialogFooter>
           </form>
@@ -364,21 +364,24 @@ export default function AdminDataManager({ table, row, displayName }: AdminDataM
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
               This action cannot be undone. This will permanently delete{" "}
-              <span className="font-semibold text-red-600">{getRecordName()}</span> from the database.
+              <span className="font-semibold text-red-600">{recordName}</span> from the database.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteConfirm}
-              disabled={isLoading}
+              disabled={isPending}
               className="bg-red-600 hover:bg-red-700"
             >
-              {isLoading ? "Deleting..." : "Delete"}
+              {isPending ? "Deleting..." : "Delete"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </>
   )
-}
+})
+
+export default AdminDataManager
+
