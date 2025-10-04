@@ -195,6 +195,91 @@ export default function DashboardContent({ profile }: { profile: any }) {
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome, {profile.full_name}!</h2>
           <p className="text-gray-600">Your personalized healthcare dashboard. Select your city to see local hospitals, stores, and more.</p>
         </div>
+
+        {/* Enhanced Hero Banner with Gradient */}
+        <div className="mb-8 relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-8 md:p-12 shadow-2xl">
+          <div className="absolute inset-0 bg-white/5 backdrop-blur-3xl"></div>
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex-1 text-white">
+              <div className="inline-block px-4 py-1.5 bg-white/20 rounded-full text-sm font-semibold mb-4 backdrop-blur-sm">
+                ✨ Your Health, Our Priority
+              </div>
+              <h3 className="text-3xl md:text-4xl font-bold mb-3 leading-tight">
+                24/7 Healthcare at Your Fingertips
+              </h3>
+              <p className="text-lg text-blue-100 mb-6 leading-relaxed">
+                Access verified hospitals, qualified doctors, nearby pharmacies, and connect with blood donors instantly. 
+                All in one platform designed for your convenience.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <a href="/hospitals" className="px-6 py-3 bg-white text-blue-600 rounded-xl font-semibold hover:bg-blue-50 transition-all shadow-lg hover:shadow-xl hover:scale-105 transform">
+                  Find Hospitals
+                </a>
+                <a href="/blood-donation" className="px-6 py-3 bg-white/10 backdrop-blur-sm text-white border-2 border-white/30 rounded-xl font-semibold hover:bg-white/20 transition-all">
+                  Emergency Blood
+                </a>
+              </div>
+            </div>
+            <div className="flex-shrink-0">
+              <div className="relative">
+                <div className="w-48 h-48 md:w-64 md:h-64 bg-white/10 backdrop-blur-lg rounded-3xl flex items-center justify-center shadow-2xl">
+                  <div className="text-center">
+                    <div className="text-6xl md:text-7xl mb-3">🏥</div>
+                    <div className="text-white text-lg font-semibold">Healthcare Hub</div>
+                    <div className="text-blue-200 text-sm">Trusted by thousands</div>
+                  </div>
+                </div>
+                <div className="absolute -top-4 -right-4 w-24 h-24 bg-yellow-400 rounded-full flex items-center justify-center text-4xl animate-bounce shadow-xl">
+                  ⚡
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Actions Strip */}
+        <div className="mb-8 bg-white rounded-2xl shadow-lg p-6">
+          <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <span className="text-2xl">⚡</span>
+            Quick Actions
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <a href="/hospitals" className="flex flex-col items-center p-4 rounded-xl hover:bg-blue-50 transition-all group cursor-pointer">
+              <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                <FaHospital size={24} className="text-blue-600" />
+              </div>
+              <span className="text-sm font-semibold text-gray-700 text-center">Find Hospital</span>
+            </a>
+            <a href="/medical-stores" className="flex flex-col items-center p-4 rounded-xl hover:bg-green-50 transition-all group cursor-pointer">
+              <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                <MdLocalPharmacy size={24} className="text-green-600" />
+              </div>
+              <span className="text-sm font-semibold text-gray-700 text-center">Pharmacy</span>
+            </a>
+            <a href="/reminders" className="flex flex-col items-center p-4 rounded-xl hover:bg-purple-50 transition-all group cursor-pointer">
+              <div className="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                <FaCapsules size={24} className="text-purple-600" />
+              </div>
+              <span className="text-sm font-semibold text-gray-700 text-center">Reminders</span>
+            </a>
+            <a href="/blood-donation" className="flex flex-col items-center p-4 rounded-xl hover:bg-red-50 transition-all group cursor-pointer">
+              <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                <FaHeart size={24} className="text-red-600" />
+              </div>
+              <span className="text-sm font-semibold text-gray-700 text-center">Blood Donor</span>
+            </a>
+          </div>
+        </div>
+
+        {/* Stats Header */}
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <span className="text-2xl">📊</span>
+            Network Statistics
+          </h3>
+          <span className="text-sm text-gray-500 bg-white px-3 py-1.5 rounded-full shadow-sm">Live Data</span>
+        </div>
+
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
           {stats.map((stat, idx) => (
@@ -208,6 +293,70 @@ export default function DashboardContent({ profile }: { profile: any }) {
             </div>
           ))}
         </div>
+
+        {/* Trust Indicators */}
+        <div className="mb-8 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border-2 border-green-200">
+          <div className="flex flex-col md:flex-row items-center justify-around gap-6 text-center">
+            <div className="flex-1">
+              <div className="text-4xl mb-2">✅</div>
+              <div className="text-2xl font-bold text-green-700">{counts.hospitals + counts.pharmacies}+</div>
+              <div className="text-sm text-gray-600 font-medium">Verified Facilities</div>
+            </div>
+            <div className="hidden md:block w-px h-16 bg-green-300"></div>
+            <div className="flex-1">
+              <div className="text-4xl mb-2">👨‍⚕️</div>
+              <div className="text-2xl font-bold text-blue-700">{counts.doctors}+</div>
+              <div className="text-sm text-gray-600 font-medium">Qualified Doctors</div>
+            </div>
+            <div className="hidden md:block w-px h-16 bg-green-300"></div>
+            <div className="flex-1">
+              <div className="text-4xl mb-2">🩸</div>
+              <div className="text-2xl font-bold text-red-700">{counts.donors}+</div>
+              <div className="text-sm text-gray-600 font-medium">Active Blood Donors</div>
+            </div>
+            <div className="hidden md:block w-px h-16 bg-green-300"></div>
+            <div className="flex-1">
+              <div className="text-4xl mb-2">⭐</div>
+              <div className="text-2xl font-bold text-yellow-700">4.8/5</div>
+              <div className="text-sm text-gray-600 font-medium">User Satisfaction</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Why Choose Us Section */}
+        <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all">
+            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
+              <span className="text-2xl">🔒</span>
+            </div>
+            <h4 className="text-lg font-bold text-gray-900 mb-2">Secure & Private</h4>
+            <p className="text-sm text-gray-600">Your health data is encrypted and protected with industry-standard security protocols.</p>
+          </div>
+          <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all">
+            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4">
+              <span className="text-2xl">⚡</span>
+            </div>
+            <h4 className="text-lg font-bold text-gray-900 mb-2">Lightning Fast</h4>
+            <p className="text-sm text-gray-600">Find hospitals, doctors, and pharmacies instantly with our optimized search system.</p>
+          </div>
+          <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all">
+            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
+              <span className="text-2xl">🎯</span>
+            </div>
+            <h4 className="text-lg font-bold text-gray-900 mb-2">Always Accurate</h4>
+            <p className="text-sm text-gray-600">Real-time updates ensure you always get the most accurate and current information.</p>
+          </div>
+        </div>
+
+        {/* Services Header */}
+        <div className="mb-6">
+          <h3 className="text-2xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+            <span className="text-2xl">🚀</span>
+            Explore Our Services
+          </h3>
+          <p className="text-gray-600">Comprehensive healthcare solutions tailored for your needs</p>
+        </div>
+
         {/* Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
           {cards.map((card, idx) => (
