@@ -66,6 +66,7 @@ export default function AdminDashboard({ stats: initialStats, recentData: initia
   const [hospitalFormData, setHospitalFormData] = useState({
     name: "",
     address: "",
+    city: "",
     phone: "",
     email: "",
     specialities: "",
@@ -88,6 +89,7 @@ export default function AdminDashboard({ stats: initialStats, recentData: initia
   const [storeFormData, setStoreFormData] = useState({
     name: "",
     address: "",
+    city: "",
     phone: "",
     email: "",
     license_number: "",
@@ -181,6 +183,7 @@ export default function AdminDashboard({ stats: initialStats, recentData: initia
     setHospitalFormData({
       name: "",
       address: "",
+      city: "",
       phone: "",
       email: "",
       specialities: "",
@@ -201,6 +204,7 @@ export default function AdminDashboard({ stats: initialStats, recentData: initia
     setStoreFormData({
       name: "",
       address: "",
+      city: "",
       phone: "",
       email: "",
       license_number: "",
@@ -254,6 +258,8 @@ export default function AdminDashboard({ stats: initialStats, recentData: initia
     try {
       const doctorData = {
         ...doctorFormData,
+        experience_years: parseInt(doctorFormData.experience_years) || 0,
+        consultation_fee: parseFloat(doctorFormData.consultation_fee) || 0,
         rating: 0,
       }
 
@@ -350,6 +356,7 @@ export default function AdminDashboard({ stats: initialStats, recentData: initia
       setHospitalFormData({
         name: item.name,
         address: item.address,
+        city: item.city || "",
         phone: item.phone,
         email: item.email || "",
         specialities: item.specialities.join(", "),
@@ -374,6 +381,7 @@ export default function AdminDashboard({ stats: initialStats, recentData: initia
       setStoreFormData({
         name: item.name,
         address: item.address,
+        city: item.city || "",
         phone: item.phone,
         email: item.email || "",
         license_number: item.license_number || "",
@@ -526,6 +534,15 @@ export default function AdminDashboard({ stats: initialStats, recentData: initia
                       id="address"
                       value={hospitalFormData.address}
                       onChange={(e) => setHospitalFormData((prev) => ({ ...prev, address: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="city">City</Label>
+                    <Input
+                      id="city"
+                      value={hospitalFormData.city}
+                      onChange={(e) => setHospitalFormData((prev) => ({ ...prev, city: e.target.value }))}
                       required
                     />
                   </div>
@@ -863,6 +880,15 @@ export default function AdminDashboard({ stats: initialStats, recentData: initia
                       id="address"
                       value={storeFormData.address}
                       onChange={(e) => setStoreFormData((prev) => ({ ...prev, address: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="city">City</Label>
+                    <Input
+                      id="city"
+                      value={storeFormData.city}
+                      onChange={(e) => setStoreFormData((prev) => ({ ...prev, city: e.target.value }))}
                       required
                     />
                   </div>

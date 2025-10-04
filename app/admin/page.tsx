@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-
+import AdminDataManager from "@/components/AdminDataManager"
 
 
 export default async function AdminPage() {
@@ -199,8 +199,7 @@ export default async function AdminPage() {
                           <td className="p-2">{h.city}</td>
                           <td className="p-2">{new Date(h.created_at).toLocaleDateString()}</td>
                           <td className="p-2 flex gap-2">
-                            <Button size="sm" variant="outline">Edit</Button>
-                            <Button size="sm" variant="destructive">Delete</Button>
+                            <AdminDataManager table="hospitals" row={h} displayName={h.name} />
                           </td>
                         </tr>
                       ))}
@@ -236,8 +235,7 @@ export default async function AdminPage() {
                           <td className="p-2">{d.hospitals?.name}</td>
                           <td className="p-2">{new Date(d.created_at).toLocaleDateString()}</td>
                           <td className="p-2 flex gap-2">
-                            <Button size="sm" variant="outline">Edit</Button>
-                            <Button size="sm" variant="destructive">Delete</Button>
+                            <AdminDataManager table="doctors" row={d} displayName={d.name} />
                           </td>
                         </tr>
                       ))}
@@ -286,8 +284,7 @@ export default async function AdminPage() {
                           </td>
                           <td className="p-2">{new Date(s.created_at).toLocaleDateString()}</td>
                           <td className="p-2 flex gap-2">
-                            <Button size="sm" variant="outline">Edit</Button>
-                            <Button size="sm" variant="destructive">Delete</Button>
+                            <AdminDataManager table="stores" row={s} displayName={s.name} />
                           </td>
                         </tr>
                       ))}
@@ -363,8 +360,7 @@ export default async function AdminPage() {
                           <td className="p-2">{b.status}</td>
                           <td className="p-2">{new Date(b.created_at).toLocaleDateString()}</td>
                           <td className="p-2 flex gap-2">
-                            <Button size="sm" variant="outline">Edit</Button>
-                            <Button size="sm" variant="destructive">Delete</Button>
+                            <AdminDataManager table="blood" row={b} displayName={b.patient_name} />
                           </td>
                         </tr>
                       ))}
@@ -402,8 +398,7 @@ export default async function AdminPage() {
                           <td className="p-2">{d.emergency_contact}</td>
                           <td className="p-2">{new Date(d.created_at).toLocaleDateString()}</td>
                           <td className="p-2 flex gap-2">
-                            <Button size="sm" variant="outline">Edit</Button>
-                            <Button size="sm" variant="destructive">Delete</Button>
+                            <AdminDataManager table="donors" row={d} displayName={d.name} />
                           </td>
                         </tr>
                       ))}
