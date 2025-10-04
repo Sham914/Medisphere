@@ -263,7 +263,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="text-center text-gray-400">
-            <p>&copy; 2024 Medisphere. All rights reserved.</p>
+            <p>&copy; 2025 Medisphere. All rights reserved.</p>
             <p className="mt-2 flex items-center justify-center gap-2">
               <Shield className="h-4 w-4" />
               Your trusted healthcare companion

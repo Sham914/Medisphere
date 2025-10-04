@@ -135,24 +135,24 @@ export default function DashboardContent({ profile }: { profile: any }) {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100">
       {/* Header */}
       <header className="bg-white/90 backdrop-blur-md border-b border-blue-200 sticky top-0 z-50 shadow-sm">
-        <div className="container mx-auto px-4 py-3 sm:py-4 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="p-1.5 sm:p-2 rounded-lg shadow-lg flex-shrink-0">
-              <img src="/main-logo.png" alt="Medisphere Logo" className="h-6 w-6 sm:h-8 sm:w-8 object-cover rounded-lg" style={{objectPosition: 'center', border: '2px solid #2563eb'}} />
+        <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-3 md:py-4 flex items-center justify-between gap-1 sm:gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+            <div className="p-1 sm:p-1.5 md:p-2 rounded-lg shadow-lg flex-shrink-0">
+              <img src="/main-logo.png" alt="Medisphere Logo" className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 object-cover rounded-lg" style={{objectPosition: 'center', border: '2px solid #2563eb'}} />
             </div>
             <div className="min-w-0">
-              <h1 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent truncate">
+              <h1 className="text-base sm:text-lg md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent truncate">
                 Medisphere
               </h1>
-              <p className="text-xs text-gray-500 hidden sm:block">Your Healthcare Companion</p>
+              <p className="text-xs text-gray-500 hidden md:block">Your Healthcare Companion</p>
             </div>
           </div>
-          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+          <div className="flex items-center gap-1 sm:gap-2 md:gap-4 flex-shrink-0">
             {/* City Dropdown */}
             <select
               value={city}
               onChange={e => setCity(e.target.value)}
-              className="h-8 sm:h-10 rounded border border-blue-300 px-2 sm:px-3 text-sm sm:text-base text-gray-700 bg-white shadow min-w-[120px] sm:min-w-[180px]"
+              className="h-7 sm:h-8 md:h-10 rounded border border-blue-300 px-1.5 sm:px-2 md:px-3 text-xs sm:text-sm md:text-base text-gray-700 bg-white shadow min-w-[80px] sm:min-w-[120px] md:min-w-[180px] truncate"
             >
               {cities.map((c) => (
                 <option key={c} value={c}>{c}</option>
@@ -160,26 +160,26 @@ export default function DashboardContent({ profile }: { profile: any }) {
             </select>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 bg-white rounded shadow hover:bg-blue-50">
-                  <Avatar className="h-7 w-7 sm:h-8 sm:w-8">
+                <button className="flex items-center gap-1 sm:gap-1.5 md:gap-2 px-1.5 sm:px-2 md:px-3 py-1 sm:py-1.5 bg-white rounded shadow hover:bg-blue-50 transition-colors">
+                  <Avatar className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 flex-shrink-0">
                     <AvatarImage src={profile.avatar_url} alt={profile.full_name} />
-                    <AvatarFallback className="text-sm">{profile.full_name?.[0] || "U"}</AvatarFallback>
+                    <AvatarFallback className="text-xs sm:text-sm">{profile.full_name?.[0] || "U"}</AvatarFallback>
                   </Avatar>
-                  <span className="font-medium text-gray-900 text-sm sm:text-base hidden sm:inline truncate max-w-[100px]">Hi, {profile.full_name}</span>
+                  <span className="font-medium text-gray-900 text-xs sm:text-sm md:text-base hidden md:inline truncate max-w-[80px] lg:max-w-[120px]">Hi, {profile.full_name}</span>
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem asChild>
-                  <Link href="/profile">Profile</Link>
+                  <Link href="/profile" className="cursor-pointer">Profile</Link>
                 </DropdownMenuItem>
                 {profile.role === "admin" && (
                   <DropdownMenuItem asChild>
-                    <Link href="/admin">Admin Panel</Link>
+                    <Link href="/admin" className="cursor-pointer">Admin Panel</Link>
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem asChild>
                   <form action="/auth/signout" method="post">
-                    <button type="submit" className="w-full text-left">Sign Out</button>
+                    <button type="submit" className="w-full text-left cursor-pointer">Sign Out</button>
                   </form>
                 </DropdownMenuItem>
               </DropdownMenuContent>
