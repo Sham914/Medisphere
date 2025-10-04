@@ -135,25 +135,24 @@ export default function DashboardContent({ profile }: { profile: any }) {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100">
       {/* Header */}
       <header className="bg-white/90 backdrop-blur-md border-b border-blue-200 sticky top-0 z-50 shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="p-2 rounded-lg shadow-lg">
-              <img src="/main-logo.png" alt="Medisphere Logo" className="h-8 w-8 object-cover rounded-lg" style={{objectPosition: 'center', border: '2px solid #2563eb'}} />
+        <div className="container mx-auto px-4 py-3 sm:py-4 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="p-1.5 sm:p-2 rounded-lg shadow-lg flex-shrink-0">
+              <img src="/main-logo.png" alt="Medisphere Logo" className="h-6 w-6 sm:h-8 sm:w-8 object-cover rounded-lg" style={{objectPosition: 'center', border: '2px solid #2563eb'}} />
             </div>
-            <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            <div className="min-w-0">
+              <h1 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent truncate">
                 Medisphere
               </h1>
-              <p className="text-xs text-gray-500">Your Healthcare Companion</p>
+              <p className="text-xs text-gray-500 hidden sm:block">Your Healthcare Companion</p>
             </div>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
             {/* City Dropdown */}
             <select
               value={city}
               onChange={e => setCity(e.target.value)}
-              className="h-10 rounded border border-blue-300 px-3 text-gray-700 bg-white shadow"
-              style={{ minWidth: 180 }}
+              className="h-8 sm:h-10 rounded border border-blue-300 px-2 sm:px-3 text-sm sm:text-base text-gray-700 bg-white shadow min-w-[120px] sm:min-w-[180px]"
             >
               {cities.map((c) => (
                 <option key={c} value={c}>{c}</option>
@@ -161,12 +160,12 @@ export default function DashboardContent({ profile }: { profile: any }) {
             </select>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 px-3 py-1.5 bg-white rounded shadow hover:bg-blue-50">
-                  <Avatar>
+                <button className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 bg-white rounded shadow hover:bg-blue-50">
+                  <Avatar className="h-7 w-7 sm:h-8 sm:w-8">
                     <AvatarImage src={profile.avatar_url} alt={profile.full_name} />
-                    <AvatarFallback>{profile.full_name?.[0] || "U"}</AvatarFallback>
+                    <AvatarFallback className="text-sm">{profile.full_name?.[0] || "U"}</AvatarFallback>
                   </Avatar>
-                  <span className="font-medium text-gray-900">Hi, {profile.full_name}</span>
+                  <span className="font-medium text-gray-900 text-sm sm:text-base hidden sm:inline truncate max-w-[100px]">Hi, {profile.full_name}</span>
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -197,34 +196,34 @@ export default function DashboardContent({ profile }: { profile: any }) {
           <p className="text-gray-600">Your personalized healthcare dashboard. Select your city to see local hospitals, stores, and more.</p>
         </div>
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
           {stats.map((stat, idx) => (
-            <div key={stat.label + idx} className={`rounded-2xl shadow-sm p-6 flex items-center gap-4 ${stat.color}`}>
-              <div>{stat.icon}</div>
-              <div>
-                <div className={`text-2xl font-bold ${stat.text}`}>{stat.value}</div>
-                <div className="text-gray-600 font-medium">{stat.label}</div>
+            <div key={stat.label + idx} className={`rounded-2xl shadow-sm p-4 sm:p-6 flex items-center gap-3 sm:gap-4 ${stat.color}`}>
+              <div className="flex-shrink-0">{stat.icon}</div>
+              <div className="min-w-0 flex-1">
+                <div className={`text-xl sm:text-2xl font-bold ${stat.text}`}>{stat.value}</div>
+                <div className="text-sm sm:text-base text-gray-600 font-medium truncate">{stat.label}</div>
               </div>
-              <span className="ml-auto text-green-500 font-bold text-lg">↗</span>
+              <span className="ml-auto text-green-500 font-bold text-base sm:text-lg flex-shrink-0">↗</span>
             </div>
           ))}
         </div>
         {/* Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
           {cards.map((card, idx) => (
-            <div key={card.title + idx} className="rounded-2xl shadow-md p-6 bg-white flex flex-col justify-between min-h-[220px]">
-              <div className="flex items-center gap-3 mb-2">
-                {card.icon}
-                <h2 className="text-xl font-semibold">{card.title}</h2>
+            <div key={card.title + idx} className="rounded-2xl shadow-md p-4 sm:p-6 bg-white flex flex-col justify-between min-h-[200px] sm:min-h-[220px]">
+              <div className="flex items-start gap-3 mb-2">
+                <div className="flex-shrink-0">{card.icon}</div>
+                <h2 className="text-lg sm:text-xl font-semibold break-words">{card.title}</h2>
               </div>
-              <p className="text-gray-600 mb-2">{card.description}</p>
+              <p className="text-sm sm:text-base text-gray-600 mb-2">{card.description}</p>
               <div className={`mb-4 font-medium ${card.badgeColor} flex items-center gap-2`}>
-                <span className="inline-block bg-green-100 rounded px-2 py-1 text-xs font-semibold">{card.badge}</span>
+                <span className="inline-block bg-green-100 rounded px-2 py-1 text-xs font-semibold whitespace-nowrap">{card.badge}</span>
               </div>
-              <a href={card.button.href} className={`mt-auto w-full flex items-center justify-center gap-2 text-white font-semibold py-2 rounded-xl transition ${card.button.color}`}
+              <a href={card.button.href} className={`mt-auto w-full flex items-center justify-center gap-2 text-white font-semibold py-2 rounded-xl transition ${card.button.color} text-sm sm:text-base`}
                 style={{ textDecoration: "none" }}>
-                {card.button.icon}
-                {card.button.label}
+                <span className="flex-shrink-0">{card.button.icon}</span>
+                <span className="truncate">{card.button.label}</span>
               </a>
             </div>
           ))}

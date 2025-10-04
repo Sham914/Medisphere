@@ -90,42 +90,42 @@ export default async function HospitalDetailPage({ params }: PageProps) {
         <Card className="bg-gradient-to-br from-white to-blue-50 border-0 shadow-xl mb-8">
           <CardHeader>
             <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="bg-blue-600 p-3 rounded-xl">
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4">
+                  <div className="bg-blue-600 p-3 rounded-xl flex-shrink-0">
                     <Heart className="h-8 w-8 text-white" />
                   </div>
-                  <CardTitle className="text-3xl text-gray-900">{hospital.name}</CardTitle>
+                  <CardTitle className="text-2xl sm:text-3xl text-gray-900 break-words">{hospital.name}</CardTitle>
                 </div>
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <MapPin className="h-5 w-5" />
-                    <span>{hospital.address}</span>
+                  <div className="flex items-start gap-2 text-gray-600">
+                    <MapPin className="h-5 w-5 flex-shrink-0 mt-0.5" />
+                    <span className="break-words">{hospital.address}</span>
                   </div>
                   <div className="flex items-center gap-2 text-gray-600">
-                    <Phone className="h-5 w-5" />
-                    <span>{hospital.phone}</span>
+                    <Phone className="h-5 w-5 flex-shrink-0" />
+                    <span className="truncate">{hospital.phone}</span>
                   </div>
                   {hospital.email && (
-                    <div className="flex items-center gap-2 text-gray-600">
-                      <Mail className="h-5 w-5" />
-                      <span>{hospital.email}</span>
+                    <div className="flex items-center gap-2 text-gray-600 min-w-0">
+                      <Mail className="h-5 w-5 flex-shrink-0" />
+                      <span className="truncate">{hospital.email}</span>
                     </div>
                   )}
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-1">
-                      <Star className="h-5 w-5 text-yellow-500 fill-current" />
+                  <div className="flex flex-wrap items-center gap-3">
+                    <div className="flex items-center gap-1 whitespace-nowrap">
+                      <Star className="h-5 w-5 text-yellow-500 fill-current flex-shrink-0" />
                       <span className="font-medium text-lg">{hospital.rating}</span>
-                      <span className="text-gray-600">({Math.floor(Math.random() * 500) + 100} reviews)</span>
+                      <span className="text-gray-600 text-sm sm:text-base">({Math.floor(Math.random() * 500) + 100} reviews)</span>
                     </div>
                     {hospital.emergency_services && (
-                      <Badge className="bg-red-100 text-red-700 hover:bg-red-200 animate-pulse">
-                        <Clock className="h-4 w-4 mr-1" />
+                      <Badge className="bg-red-100 text-red-700 hover:bg-red-200 animate-pulse whitespace-nowrap">
+                        <Clock className="h-4 w-4 mr-1 flex-shrink-0" />
                         24/7 Emergency Services
                       </Badge>
                     )}
-                    <Badge className="bg-green-100 text-green-700">
-                      <Shield className="h-4 w-4 mr-1" />
+                    <Badge className="bg-green-100 text-green-700 whitespace-nowrap">
+                      <Shield className="h-4 w-4 mr-1 flex-shrink-0" />
                       Verified Hospital
                     </Badge>
                   </div>
@@ -165,45 +165,45 @@ export default async function HospitalDetailPage({ params }: PageProps) {
           </div>
 
           {doctors && doctors.length > 0 ? (
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-6">
               {doctors.map((doctor) => (
                 <Card key={doctor.id} className="bg-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] group">
                   <CardHeader>
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="bg-green-100 p-2 rounded-lg">
+                    <div className="flex items-center gap-3 mb-2 min-w-0">
+                      <div className="bg-green-100 p-2 rounded-lg flex-shrink-0">
                         <Users className="h-5 w-5 text-green-600" />
                       </div>
-                      <CardTitle className="text-xl text-gray-900 group-hover:text-blue-600 transition-colors">{doctor.name}</CardTitle>
+                      <CardTitle className="text-lg sm:text-xl text-gray-900 group-hover:text-blue-600 transition-colors break-words">{doctor.name}</CardTitle>
                     </div>
-                    <CardDescription className="text-blue-600 font-medium">{doctor.specialization}</CardDescription>
+                    <CardDescription className="text-blue-600 font-medium truncate">{doctor.specialization}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-gray-600">Experience:</span>
-                        <span className="font-medium">{doctor.experience_years} years</span>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-gray-600 text-sm sm:text-base">Experience:</span>
+                        <span className="font-medium text-sm sm:text-base whitespace-nowrap">{doctor.experience_years} years</span>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-gray-600">Qualification:</span>
-                        <span className="font-medium">{doctor.qualification}</span>
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="text-gray-600 text-sm sm:text-base flex-shrink-0">Qualification:</span>
+                        <span className="font-medium text-sm sm:text-base text-right break-words">{doctor.qualification}</span>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-gray-600">Consultation Fee:</span>
-                        <span className="font-medium text-green-600">₹{doctor.consultation_fee}</span>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-gray-600 text-sm sm:text-base">Consultation Fee:</span>
+                        <span className="font-medium text-green-600 whitespace-nowrap">₹{doctor.consultation_fee}</span>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-gray-600">Rating:</span>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-gray-600 text-sm sm:text-base">Rating:</span>
                         <div className="flex items-center gap-1">
-                          <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                          <Star className="h-4 w-4 text-yellow-500 fill-current flex-shrink-0" />
                           <span className="font-medium">{doctor.rating}</span>
                         </div>
                       </div>
                       {doctor.available_days && (
                         <div>
-                          <span className="text-gray-600 block mb-1">Available Days:</span>
+                          <span className="text-gray-600 block mb-1 text-sm">Available Days:</span>
                           <div className="flex flex-wrap gap-1">
                             {(Array.isArray(doctor.available_days) ? doctor.available_days : []).map((day: string) => (
-                              <Badge key={day} variant="outline" className="text-xs">
+                              <Badge key={day} variant="outline" className="text-xs whitespace-nowrap">
                                 {day}
                               </Badge>
                             ))}
@@ -211,9 +211,9 @@ export default async function HospitalDetailPage({ params }: PageProps) {
                         </div>
                       )}
                       {doctor.available_hours && (
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-600">Hours:</span>
-                          <span className="font-medium">{doctor.available_hours}</span>
+                        <div className="flex items-start justify-between gap-2">
+                          <span className="text-gray-600 text-sm sm:text-base flex-shrink-0">Hours:</span>
+                          <span className="font-medium text-sm sm:text-base text-right break-words">{doctor.available_hours}</span>
                         </div>
                       )}
                       <div className="pt-2">

@@ -136,36 +136,38 @@ export default async function AdminPage() {
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h2>
           <p className="text-gray-600">Manage all platform data, users, and resources visually</p>
-          <div className="flex flex-row gap-6 mt-8 justify-start flex-wrap">
-            <Card className="min-w-[140px] p-4 flex flex-col items-center bg-indigo-50 border-0">
-              <Hospital className="text-indigo-600 mb-1" />
-              <span className="font-bold text-2xl">{hospitalsCount}</span>
-              <span className="text-xs text-gray-500">Hospitals</span>
+          
+          {/* Stats Grid - Full Width & Responsive */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mt-8">
+            <Card className="p-4 flex flex-col items-center bg-indigo-50 border-0 hover:shadow-lg transition-shadow">
+              <Hospital className="text-indigo-600 mb-2 h-8 w-8" />
+              <span className="font-bold text-3xl">{hospitalsCount}</span>
+              <span className="text-sm text-gray-600">Hospitals</span>
             </Card>
-            <Card className="min-w-[140px] p-4 flex flex-col items-center bg-indigo-50 border-0">
-              <Stethoscope className="text-indigo-600 mb-1" />
-              <span className="font-bold text-2xl">{doctorsCount}</span>
-              <span className="text-xs text-gray-500">Doctors</span>
+            <Card className="p-4 flex flex-col items-center bg-indigo-50 border-0 hover:shadow-lg transition-shadow">
+              <Stethoscope className="text-indigo-600 mb-2 h-8 w-8" />
+              <span className="font-bold text-3xl">{doctorsCount}</span>
+              <span className="text-sm text-gray-600">Doctors</span>
             </Card>
-            <Card className="min-w-[140px] p-4 flex flex-col items-center bg-indigo-50 border-0">
-              <Store className="text-indigo-600 mb-1" />
-              <span className="font-bold text-2xl">{medicalStoresCount}</span>
-              <span className="text-xs text-gray-500">Medical Stores</span>
+            <Card className="p-4 flex flex-col items-center bg-indigo-50 border-0 hover:shadow-lg transition-shadow">
+              <Store className="text-indigo-600 mb-2 h-8 w-8" />
+              <span className="font-bold text-3xl">{medicalStoresCount}</span>
+              <span className="text-sm text-gray-600">Medical Stores</span>
             </Card>
-            <Card className="min-w-[140px] p-4 flex flex-col items-center bg-indigo-50 border-0">
-              <User className="text-indigo-600 mb-1" />
-              <span className="font-bold text-2xl">{usersCount}</span>
-              <span className="text-xs text-gray-500">Users</span>
+            <Card className="p-4 flex flex-col items-center bg-indigo-50 border-0 hover:shadow-lg transition-shadow">
+              <User className="text-indigo-600 mb-2 h-8 w-8" />
+              <span className="font-bold text-3xl">{usersCount}</span>
+              <span className="text-sm text-gray-600">Users</span>
             </Card>
-            <Card className="min-w-[140px] p-4 flex flex-col items-center bg-indigo-50 border-0">
-              <Droplet className="text-indigo-600 mb-1" />
-              <span className="font-bold text-2xl">{bloodRequestsCount}</span>
-              <span className="text-xs text-gray-500">Blood Requests</span>
+            <Card className="p-4 flex flex-col items-center bg-indigo-50 border-0 hover:shadow-lg transition-shadow">
+              <Droplet className="text-indigo-600 mb-2 h-8 w-8" />
+              <span className="font-bold text-3xl">{bloodRequestsCount}</span>
+              <span className="text-sm text-gray-600">Blood Requests</span>
             </Card>
-            <Card className="min-w-[140px] p-4 flex flex-col items-center bg-indigo-50 border-0">
-              <Syringe className="text-indigo-600 mb-1" />
-              <span className="font-bold text-2xl">{donorsCount}</span>
-              <span className="text-xs text-gray-500">Donors</span>
+            <Card className="p-4 flex flex-col items-center bg-indigo-50 border-0 hover:shadow-lg transition-shadow">
+              <Syringe className="text-indigo-600 mb-2 h-8 w-8" />
+              <span className="font-bold text-3xl">{donorsCount}</span>
+              <span className="text-sm text-gray-600">Donors</span>
             </Card>
           </div>
         </div>

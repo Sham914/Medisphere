@@ -129,49 +129,49 @@ const MedicalStoreSearch: FC<MedicalStoreSearchProps> = ({ initialStores }) => {
               <Card key={store.id} className="bg-white border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] group">
                 <CardHeader>
                   <div className="flex items-start justify-between">
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3 mb-3">
-                        <div className="bg-green-100 p-2 rounded-lg">
+                        <div className="bg-green-100 p-2 rounded-lg flex-shrink-0">
                           <Pill className="h-6 w-6 text-green-600" />
                         </div>
-                        <CardTitle className="text-xl text-gray-900 group-hover:text-green-600 transition-colors">
+                        <CardTitle className="text-xl text-gray-900 group-hover:text-green-600 transition-colors break-words">
                           {store.name}
                         </CardTitle>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
-                        <div className="flex items-center gap-1">
-                          <MapPin className="h-4 w-4" />
-                          {store.address}
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-600 mb-4">
+                        <div className="flex items-center gap-1 min-w-0">
+                          <MapPin className="h-4 w-4 flex-shrink-0" />
+                          <span className="truncate">{store.address}</span>
                         </div>
-                        <div className="flex items-center gap-1">
-                          <Phone className="h-4 w-4" />
-                          {store.phone}
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                          <Phone className="h-4 w-4 flex-shrink-0" />
+                          <span className="whitespace-nowrap">{store.phone}</span>
                         </div>
                         {store.email && (
-                          <div className="flex items-center gap-1">
-                            <Mail className="h-4 w-4" />
-                            {store.email}
+                          <div className="flex items-center gap-1 min-w-0">
+                            <Mail className="h-4 w-4 flex-shrink-0" />
+                            <span className="truncate">{store.email}</span>
                           </div>
                         )}
                       </div>
-                      <div className="flex items-center gap-3 mb-4">
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4">
                         <div className="flex items-center gap-1">
-                          <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                          <Star className="h-4 w-4 text-yellow-500 fill-current flex-shrink-0" />
                           <span className="font-medium">{store.rating}</span>
                           {/* Use a deterministic review count to avoid hydration mismatch */}
-                          <span className="text-xs text-gray-500">({(typeof store.id === 'number' ? (store.id % 300) + 50 : (store.name?.length ?? 0) + 50)} reviews)</span>
+                          <span className="text-xs text-gray-500 whitespace-nowrap">({(typeof store.id === 'number' ? (store.id % 300) + 50 : (store.name?.length ?? 0) + 50)} reviews)</span>
                         </div>
-                        <Badge className={operatingStatus.color}>
+                        <Badge className={`${operatingStatus.color} whitespace-nowrap`}>
                           <Clock className="h-3 w-3 mr-1" />
                           {operatingStatus.status}
                         </Badge>
                         {store.license_number && (
-                          <Badge variant="secondary" className="bg-blue-100 text-blue-700">
+                          <Badge variant="secondary" className="bg-blue-100 text-blue-700 whitespace-nowrap">
                             <Shield className="h-3 w-3 mr-1" />
                             Licensed
                           </Badge>
                         )}
-                        <Badge className="bg-blue-100 text-blue-700">
+                        <Badge className="bg-blue-100 text-blue-700 whitespace-nowrap">
                           <CheckCircle className="h-3 w-3 mr-1" />
                           Verified
                         </Badge>
@@ -210,27 +210,29 @@ const MedicalStoreSearch: FC<MedicalStoreSearchProps> = ({ initialStores }) => {
                     )}
                     <div className="bg-gray-50 p-4 rounded-lg">
                       <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
-                        <Award className="h-4 w-4 text-green-600" />
+                        <Award className="h-4 w-4 text-green-600 flex-shrink-0" />
                         Store Information
                       </h4>
-                      <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                         <div>
                           <span className="text-gray-600">Operating Hours:</span>
-                          <p className="font-medium">{store.operating_hours}</p>
+                          <p className="font-medium break-words">{store.operating_hours}</p>
                         </div>
                         {store.license_number && (
                           <div>
                             <span className="text-gray-600">License:</span>
-                            <p className="font-medium">{store.license_number}</p>
+                            <p className="font-medium break-words">{store.license_number}</p>
                           </div>
                         )}
                       </div>
                     </div>
-                    <div className="flex flex-wrap gap-3 pt-2">
-                      <MedicalStoreViewDetailsButton store={store} />
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-2">
+                      <div className="w-full sm:w-auto">
+                        <MedicalStoreViewDetailsButton store={store} />
+                      </div>
                       <Button
                         variant="outline"
-                        className="border-green-200 hover:bg-green-50 bg-transparent"
+                        className="border-green-200 hover:bg-green-50 bg-transparent w-full sm:w-auto"
                         onClick={() => handleDirectionsClick(store)}
                       >
                         <MapPin className="h-4 w-4 mr-2" />
@@ -238,7 +240,7 @@ const MedicalStoreSearch: FC<MedicalStoreSearchProps> = ({ initialStores }) => {
                       </Button>
                       <Button 
                         variant="outline" 
-                        className="border-green-200 hover:bg-green-50 bg-transparent shadow-md hover:shadow-lg transition-all"
+                        className="border-green-200 hover:bg-green-50 bg-transparent shadow-md hover:shadow-lg transition-all w-full sm:w-auto"
                         onClick={() => openGoogleMaps(store.address, store.name)}
                       >
                         <Navigation className="h-4 w-4 mr-2" />

@@ -108,44 +108,44 @@ export default function HospitalSearch() {
               <CardHeader>
                 <div className="flex flex-col">
                     <div className="flex items-start justify-between">
-                      <div className="flex-1">
+                      <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 mb-3">
-                          <div className="bg-blue-100 p-2 rounded-lg">
+                          <div className="bg-blue-100 p-2 rounded-lg flex-shrink-0">
                             <Building2 className="h-6 w-6 text-blue-600" />
                           </div>
-                          <CardTitle className="text-xl text-gray-900 group-hover:text-blue-600 transition-colors">
+                          <CardTitle className="text-xl text-gray-900 group-hover:text-blue-600 transition-colors break-words">
                             {hospital.name}
                           </CardTitle>
                         </div>
-                        <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
-                          <div className="flex items-center gap-1">
-                            <MapPin className="h-4 w-4" />
-                            {hospital.address}
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-600 mb-4">
+                          <div className="flex items-center gap-1 min-w-0">
+                            <MapPin className="h-4 w-4 flex-shrink-0" />
+                            <span className="truncate">{hospital.address}</span>
                           </div>
-                          <div className="flex items-center gap-1">
-                            <Phone className="h-4 w-4" />
-                            {hospital.phone}
+                          <div className="flex items-center gap-1 flex-shrink-0">
+                            <Phone className="h-4 w-4 flex-shrink-0" />
+                            <span className="whitespace-nowrap">{hospital.phone}</span>
                           </div>
                           {hospital.email && (
-                            <div className="flex items-center gap-1">
-                              <Mail className="h-4 w-4" />
-                              {hospital.email}
+                            <div className="flex items-center gap-1 min-w-0">
+                              <Mail className="h-4 w-4 flex-shrink-0" />
+                              <span className="truncate">{hospital.email}</span>
                             </div>
                           )}
                         </div>
-                        <div className="flex items-center gap-3 mb-4">
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4">
                           <div className="flex items-center gap-1">
-                            <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                            <Star className="h-4 w-4 text-yellow-500 fill-current flex-shrink-0" />
                             <span className="font-medium">{hospital.rating}</span>
-                            <span className="text-xs text-gray-500">({(typeof hospital.id === 'number' ? (hospital.id % 500) + 100 : (hospital.name?.length ?? 0) + 100)} reviews)</span>
+                            <span className="text-xs text-gray-500 whitespace-nowrap">({(typeof hospital.id === 'number' ? (hospital.id % 500) + 100 : (hospital.name?.length ?? 0) + 100)} reviews)</span>
                           </div>
                           {hospital.emergency_services && (
-                            <Badge className="bg-red-100 text-red-700 hover:bg-red-200 animate-pulse">
+                            <Badge className="bg-red-100 text-red-700 hover:bg-red-200 animate-pulse whitespace-nowrap">
                               <Clock className="h-3 w-3 mr-1" />
                               24/7 Emergency
                             </Badge>
                           )}
-                          <Badge className="bg-green-100 text-green-700">
+                          <Badge className="bg-green-100 text-green-700 whitespace-nowrap">
                             <Shield className="h-3 w-3 mr-1" />
                             Verified
                           </Badge>
@@ -190,8 +190,8 @@ export default function HospitalSearch() {
                         })()}
                       </div>
                     </div>
-                    <div className="flex flex-wrap gap-3 pt-2">
-                      <Button asChild className="bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all">
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-2">
+                      <Button asChild className="bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all w-full sm:w-auto">
                         <Link href={`/hospitals/${hospital.id}`}>
                           <Heart className="h-4 w-4 mr-2" />
                           View Details
@@ -199,13 +199,13 @@ export default function HospitalSearch() {
                       </Button>
                       <Button 
                         variant="outline" 
-                        className="border-blue-200 hover:bg-blue-50 bg-transparent shadow-md hover:shadow-lg transition-all"
+                        className="border-blue-200 hover:bg-blue-50 bg-transparent shadow-md hover:shadow-lg transition-all w-full sm:w-auto"
                         onClick={() => openGoogleMaps(hospital.address, hospital.name)}
                       >
                         <Navigation className="h-4 w-4 mr-2" />
                         Get Directions
                       </Button>
-                      <Button variant="outline" className="border-green-200 hover:bg-green-50 bg-transparent shadow-md hover:shadow-lg transition-all">
+                      <Button variant="outline" className="border-green-200 hover:bg-green-50 bg-transparent shadow-md hover:shadow-lg transition-all w-full sm:w-auto">
                           <Users className="h-4 w-4 mr-2" />
                           View Doctors
                       </Button>

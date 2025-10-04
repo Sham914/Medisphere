@@ -222,46 +222,46 @@ export default function BloodDonationNetwork({
   return (
     <div className="space-y-6">
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         <Card className="bg-white border-0 shadow-lg">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="bg-red-100 p-3 rounded-lg">
-                <Heart className="h-6 w-6 text-red-600" />
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="bg-red-100 p-2 sm:p-3 rounded-lg flex-shrink-0">
+                <Heart className="h-5 w-5 sm:h-6 sm:w-6 text-red-600" />
               </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{bloodRequests.length}</p>
-                <p className="text-sm text-gray-600">Active Requests</p>
+              <div className="min-w-0">
+                <p className="text-xl sm:text-2xl font-bold text-gray-900">{bloodRequests.length}</p>
+                <p className="text-xs sm:text-sm text-gray-600">Active Requests</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="bg-white border-0 shadow-lg">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="bg-blue-100 p-3 rounded-lg">
-                <Users className="h-6 w-6 text-blue-600" />
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="bg-blue-100 p-2 sm:p-3 rounded-lg flex-shrink-0">
+                <Users className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
               </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{availableDonors.length}</p>
-                <p className="text-sm text-gray-600">Available Donors</p>
+              <div className="min-w-0">
+                <p className="text-xl sm:text-2xl font-bold text-gray-900">{availableDonors.length}</p>
+                <p className="text-xs sm:text-sm text-gray-600">Available Donors</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="bg-white border-0 shadow-lg">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="bg-green-100 p-3 rounded-lg">
-                <Droplets className="h-6 w-6 text-green-600" />
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="bg-green-100 p-2 sm:p-3 rounded-lg flex-shrink-0">
+                <Droplets className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
               </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">
+              <div className="min-w-0">
+                <p className="text-lg sm:text-2xl font-bold text-gray-900 truncate">
                   {donorProfile?.is_available ? "Available" : "Not Available"}
                 </p>
-                <p className="text-sm text-gray-600">Your Status</p>
+                <p className="text-xs sm:text-sm text-gray-600">Your Status</p>
               </div>
             </div>
           </CardContent>
@@ -284,7 +284,7 @@ export default function BloodDonationNetwork({
         <CardContent>
           {donorProfile ? (
             <div className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <span className="text-sm text-gray-600">Blood Type:</span>
                   <p className="font-medium text-lg">{donorProfile.blood_type}</p>
@@ -306,7 +306,7 @@ export default function BloodDonationNetwork({
                   </p>
                 </div>
               </div>
-              <div className="flex gap-3 items-center">
+              <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
                 <Dialog open={isDonorDialogOpen} onOpenChange={setIsDonorDialogOpen}>
                   <DialogTrigger asChild>
                     <Button variant="outline" className="border-red-200 hover:bg-red-50 bg-transparent">
@@ -747,29 +747,29 @@ export default function BloodDonationNetwork({
                   <Card key={request.id} className="bg-white border-0 shadow-lg">
                     <CardHeader>
                       <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <CardTitle className="text-lg text-gray-900 mb-2">
+                        <div className="flex-1 min-w-0">
+                          <CardTitle className="text-base sm:text-lg text-gray-900 mb-2 break-words">
                             Blood Needed for {request.patient_name}
                           </CardTitle>
-                          <div className="flex items-center gap-3 mb-2">
-                            <Badge className="bg-red-100 text-red-700 text-sm px-3 py-1">{request.blood_type}</Badge>
-                            <Badge className={urgencyBadge.color}>
-                              <AlertTriangle className="h-3 w-3 mr-1" />
+                          <div className="flex flex-wrap items-center gap-2 mb-3">
+                            <Badge className="bg-red-100 text-red-700 text-sm px-3 py-1 whitespace-nowrap">{request.blood_type}</Badge>
+                            <Badge className={`${urgencyBadge.color} whitespace-nowrap`}>
+                              <AlertTriangle className="h-3 w-3 mr-1 flex-shrink-0" />
                               {urgencyBadge.label}
                             </Badge>
-                            <span className="text-sm text-gray-600">{request.units_needed} units needed</span>
+                            <span className="text-xs sm:text-sm text-gray-600 whitespace-nowrap">{request.units_needed} units needed</span>
                           </div>
-                          <div className="flex items-center gap-4 text-sm text-gray-600">
-                            <div className="flex items-center gap-1">
-                              <MapPin className="h-4 w-4" />
-                              {request.hospital_name}
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-600">
+                            <div className="flex items-center gap-1 min-w-0">
+                              <MapPin className="h-4 w-4 flex-shrink-0" />
+                              <span className="truncate">{request.hospital_name}</span>
                             </div>
-                            <div className="flex items-center gap-1">
-                              <Phone className="h-4 w-4" />
-                              {request.contact_phone}
+                            <div className="flex items-center gap-1 min-w-0">
+                              <Phone className="h-4 w-4 flex-shrink-0" />
+                              <span className="truncate">{request.contact_phone}</span>
                             </div>
-                            <div className="flex items-center gap-1">
-                              <Clock className="h-4 w-4" />
+                            <div className="flex items-center gap-1 whitespace-nowrap">
+                              <Clock className="h-4 w-4 flex-shrink-0" />
                               {format(parseISO(request.created_at), "MMM dd, yyyy")}
                             </div>
                           </div>
@@ -780,16 +780,16 @@ export default function BloodDonationNetwork({
                       <div className="space-y-3">
                         <div>
                           <span className="text-sm text-gray-600 block mb-1">Hospital Address:</span>
-                          <p className="text-sm text-gray-700">{request.hospital_address}</p>
+                          <p className="text-sm text-gray-700 break-words">{request.hospital_address}</p>
                         </div>
                         {request.additional_info && (
                           <div>
                             <span className="text-sm text-gray-600 block mb-1">Additional Information:</span>
-                            <p className="text-sm text-gray-700">{request.additional_info}</p>
+                            <p className="text-sm text-gray-700 break-words">{request.additional_info}</p>
                           </div>
                         )}
-                        <div className="flex items-center justify-between pt-2">
-                          <span className="text-sm text-gray-600">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pt-2">
+                          <span className="text-xs sm:text-sm text-gray-600">
                             {compatibleDonors.length} compatible donors available
                           </span>
                           <a
@@ -823,29 +823,29 @@ export default function BloodDonationNetwork({
         </TabsContent>
         <TabsContent value="donors" className="space-y-4">
           {eligibleAvailableDonors.length > 0 ? (
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-4">
               {eligibleAvailableDonors.map((donor) => (
                 <Card key={donor.id} className="bg-white border-0 shadow-lg">
                   <CardHeader>
                     <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <CardTitle className="text-lg text-gray-900 mb-2">Blood Type: {donor.blood_type}</CardTitle>
-                        <div className="mt-1 text-base font-semibold text-gray-900">{donor.name || "Unknown Donor"}</div>
-                        <div className="flex items-center gap-3 mb-2 mt-1">
-                          <Badge className="bg-green-100 text-green-700">Available</Badge>
-                          <span className="text-sm text-gray-600">{donor.age} years old</span>
-                          {donor.weight && <span className="text-sm text-gray-600">{donor.weight} kg</span>}
+                      <div className="flex-1 min-w-0">
+                        <CardTitle className="text-base sm:text-lg text-gray-900 mb-2">Blood Type: {donor.blood_type}</CardTitle>
+                        <div className="mt-1 text-base font-semibold text-gray-900 break-words">{donor.name || "Unknown Donor"}</div>
+                        <div className="flex flex-wrap items-center gap-2 mb-2 mt-1">
+                          <Badge className="bg-green-100 text-green-700 whitespace-nowrap">Available</Badge>
+                          <span className="text-xs sm:text-sm text-gray-600 whitespace-nowrap">{donor.age} years old</span>
+                          {donor.weight && <span className="text-xs sm:text-sm text-gray-600 whitespace-nowrap">{donor.weight} kg</span>}
                         </div>
-                        <div className="flex items-center gap-4 text-sm text-gray-600">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-600">
                           {donor.location && (
-                            <div className="flex items-center gap-1">
-                              <MapPin className="h-4 w-4" />
-                              {donor.location}
+                            <div className="flex items-center gap-1 min-w-0">
+                              <MapPin className="h-4 w-4 flex-shrink-0" />
+                              <span className="truncate">{donor.location}</span>
                             </div>
                           )}
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-4 w-4" />
-                            Last donation: {donor.last_donation_date
+                          <div className="flex items-center gap-1 whitespace-nowrap">
+                            <Clock className="h-4 w-4 flex-shrink-0" />
+                            Last: {donor.last_donation_date
                               ? format(parseISO(donor.last_donation_date), "MMM yyyy")
                               : "Never"}
                           </div>
@@ -855,7 +855,7 @@ export default function BloodDonationNetwork({
                   </CardHeader>
                   <CardContent>
                     <div className="flex flex-col gap-2">
-                      <div className="text-sm text-gray-700 mt-2 mb-1">
+                      <div className="text-sm text-gray-700 mt-2 mb-1 break-words">
                         <span className="font-semibold">Medical Conditions:</span> {donor.medical_conditions?.trim() ? donor.medical_conditions : "nothing concerning"}
                       </div>
                       <div className="flex gap-2">
