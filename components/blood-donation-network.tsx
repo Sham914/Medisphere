@@ -224,45 +224,65 @@ export default function BloodDonationNetwork({
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         <Card className="bg-white border-0 shadow-lg">
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex items-center gap-3 sm:gap-4">
-              <div className="bg-red-100 p-2 sm:p-3 rounded-lg flex-shrink-0">
-                <Heart className="h-5 w-5 sm:h-6 sm:w-6 text-red-600" />
+          <CardContent className="p-5 sm:p-6">
+            <div className="flex items-center gap-4">
+              <div className="bg-red-100 p-3 rounded-lg flex-shrink-0">
+                <Heart className="h-6 w-6 text-red-600" />
               </div>
-              <div className="min-w-0">
-                <p className="text-xl sm:text-2xl font-bold text-gray-900">{bloodRequests.length}</p>
-                <p className="text-xs sm:text-sm text-gray-600">Active Requests</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white border-0 shadow-lg">
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex items-center gap-3 sm:gap-4">
-              <div className="bg-blue-100 p-2 sm:p-3 rounded-lg flex-shrink-0">
-                <Users className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xl sm:text-2xl font-bold text-gray-900">{availableDonors.length}</p>
-                <p className="text-xs sm:text-sm text-gray-600">Available Donors</p>
+              <div className="min-w-0 flex-1">
+                <p className="text-2xl font-bold text-gray-900 whitespace-nowrap">{bloodRequests.length}</p>
+                <p className="text-sm text-gray-600 whitespace-nowrap">Active Requests</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="bg-white border-0 shadow-lg">
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex items-center gap-3 sm:gap-4">
-              <div className="bg-green-100 p-2 sm:p-3 rounded-lg flex-shrink-0">
-                <Droplets className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
+          <CardContent className="p-5 sm:p-6">
+            <div className="flex items-center gap-4">
+              <div className="bg-blue-100 p-3 rounded-lg flex-shrink-0">
+                <Users className="h-6 w-6 text-blue-600" />
               </div>
-              <div className="min-w-0">
-                <p className="text-lg sm:text-2xl font-bold text-gray-900 truncate">
-                  {donorProfile?.is_available ? "Available" : "Not Available"}
-                </p>
-                <p className="text-xs sm:text-sm text-gray-600">Your Status</p>
+              <div className="min-w-0 flex-1">
+                <p className="text-2xl font-bold text-gray-900 whitespace-nowrap">{availableDonors.length}</p>
+                <p className="text-sm text-gray-600 whitespace-nowrap">Available Donors</p>
               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white border-0 shadow-lg">
+          <CardContent className="p-5 sm:p-6">
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-4">
+                <div className={`p-3 rounded-lg flex-shrink-0 ${
+                  donorProfile?.is_available && canBeAvailable ? 'bg-green-100' : 'bg-orange-100'
+                }`}>
+                  <Droplets className={`h-6 w-6 ${
+                    donorProfile?.is_available && canBeAvailable ? 'text-green-600' : 'text-orange-600'
+                  }`} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className={`text-2xl font-bold whitespace-nowrap ${
+                    donorProfile?.is_available && canBeAvailable ? 'text-green-700' : 'text-orange-700'
+                  }`}>
+                    {!donorProfile ? "Not Registered" : 
+                     (!canBeAvailable ? "Unavailable" : 
+                     (donorProfile.is_available ? "Available" : "Unavailable"))}
+                  </p>
+                  <p className="text-sm text-gray-600 whitespace-nowrap">Your Status</p>
+                </div>
+              </div>
+              {donorProfile && !canBeAvailable && (
+                <div className="text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded whitespace-nowrap">
+                  Wait {3 - differenceInMonths(new Date(), new Date(donorProfile.last_donation_date))} month(s)
+                </div>
+              )}
+              {donorProfile && canBeAvailable && !donorProfile.is_available && (
+                <div className="text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded">
+                  Manually marked unavailable
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

@@ -23,6 +23,7 @@ export default function RegisterPage() {
     role: "user",
   })
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
@@ -35,6 +36,7 @@ export default function RegisterPage() {
     const supabase = createClient()
     setIsLoading(true)
     setError(null)
+    setSuccess(null)
 
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match")
@@ -43,7 +45,7 @@ export default function RegisterPage() {
     }
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
@@ -55,8 +57,20 @@ export default function RegisterPage() {
           },
         },
       })
-      if (error) throw error
-      router.push("/auth/verify-email")
+      
+      if (signUpError) throw signUpError
+      
+      // Since email confirmation is disabled, the user is automatically signed in
+      // Redirect directly to dashboard
+      if (authData.user) {
+        setSuccess("Account created successfully! Redirecting to dashboard...")
+        // Small delay to show success message
+        setTimeout(() => {
+          router.push("/dashboard")
+        }, 1000)
+      } else {
+        throw new Error("Registration successful but user session not created")
+      }
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred")
     } finally {
@@ -145,6 +159,14 @@ export default function RegisterPage() {
               {error && (
                 <div className="bg-red-50 border border-red-200 rounded-md p-3">
                   <p className="text-sm text-red-600">{error}</p>
+                </div>
+              )}
+              {success && (
+                <div className="bg-green-50 border border-green-200 rounded-md p-3">
+                  <p className="text-sm text-green-600 flex items-center gap-2">
+                    <span>✓</span>
+                    <span>{success}</span>
+                  </p>
                 </div>
               )}
               <Button type="submit" className="w-full h-11 bg-blue-600 hover:bg-blue-700" disabled={isLoading}>

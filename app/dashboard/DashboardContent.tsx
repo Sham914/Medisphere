@@ -169,8 +169,6 @@ export default function DashboardContent({ profile }: { profile: any }) {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                {/* Debug: Show current role */}
-                <div className="px-3 py-1 text-xs text-gray-400">Role: {profile.role || 'unknown'}</div>
                 <DropdownMenuItem asChild>
                   <Link href="/profile">Profile</Link>
                 </DropdownMenuItem>
