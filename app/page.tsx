@@ -37,30 +37,30 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-16 text-center">
         <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-center gap-3 mb-6">
+          <div className="flex flex-col items-center justify-center gap-4 mb-6">
             <div className="bg-gradient-to-r from-yellow-400 to-orange-400 p-3 rounded-full shadow-lg">
               <Sparkles className="h-8 w-8 text-white" />
             </div>
-            <h2 className="text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-800 bg-clip-text text-transparent text-balance">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-800 bg-clip-text text-transparent leading-tight px-4">
               Your Complete Healthcare Companion
             </h2>
           </div>
-          <p className="text-xl text-gray-600 mb-8 text-pretty">
+          <p className="text-base sm:text-lg md:text-xl text-gray-600 mb-8 leading-relaxed px-4">
             Connect with hospitals, find doctors, locate pharmacies, manage medications, and join our blood donation
             network - all in one trusted platform.
           </p>
-          <div className="flex items-center justify-center gap-6 mb-8">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mb-8">
             <div className="flex items-center gap-2 text-green-600">
-              <CheckCircle className="h-5 w-5" />
-              <span className="text-sm font-medium">Verified Providers</span>
+              <CheckCircle className="h-5 w-5 flex-shrink-0" />
+              <span className="text-sm font-medium whitespace-nowrap">Verified Providers</span>
             </div>
             <div className="flex items-center gap-2 text-green-600">
-              <Shield className="h-5 w-5" />
-              <span className="text-sm font-medium">Secure Platform</span>
+              <Shield className="h-5 w-5 flex-shrink-0" />
+              <span className="text-sm font-medium whitespace-nowrap">Secure Platform</span>
             </div>
             <div className="flex items-center gap-2 text-green-600">
-              <TrendingUp className="h-5 w-5" />
-              <span className="text-sm font-medium">Growing Network</span>
+              <TrendingUp className="h-5 w-5 flex-shrink-0" />
+              <span className="text-sm font-medium whitespace-nowrap">Growing Network</span>
             </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -228,22 +228,26 @@ export default function HomePage() {
       {/* CTA Section */}
       <section className="container mx-auto px-4 py-16">
         <div className="bg-gradient-to-br from-white to-blue-50 rounded-2xl shadow-2xl p-8 md:p-12 text-center border border-blue-100">
-          <div className="flex items-center justify-center gap-3 mb-4">
+          <div className="flex flex-col items-center justify-center gap-4 mb-6">
             <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-3 rounded-full shadow-lg">
               <Sparkles className="h-8 w-8 text-white" />
             </div>
-            <h3 className="text-3xl font-bold text-gray-900">Ready to Transform Your Healthcare Experience?</h3>
+            <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight px-4">
+              Ready to Transform Your Healthcare Experience?
+            </h3>
           </div>
-          <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed px-4">
             Join thousands of users who trust Medisphere for their healthcare needs. Start your journey to better health
             today.
           </p>
-          <Link href="/auth/register">
-            <Button size="lg" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 h-12 px-8 shadow-lg hover:shadow-xl transition-all">
-              <Heart className="h-5 w-5 mr-2" />
-              Create Your Account
-            </Button>
-          </Link>
+          <div className="flex justify-center px-4">
+            <Link href="/auth/register" className="w-full sm:w-auto">
+              <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 h-12 px-8 shadow-lg hover:shadow-xl transition-all">
+                <Heart className="h-5 w-5 mr-2" />
+                Create Your Account
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
       {/* Footer */}
