@@ -26,7 +26,7 @@ export default async function AdminPage() {
   // Check if user is admin based on role in public.profiles
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
   if (!profile || profile.role !== "admin") {
-    redirect("/dashboard")
+    redirect("/")
   }
 
   // Fetch all data for dashboard
@@ -127,7 +127,7 @@ export default async function AdminPage() {
           </div>
           <div className="flex items-center gap-4">
             <Button asChild variant="ghost" className="text-gray-700 hover:text-indigo-600">
-              <Link href="/dashboard">User Dashboard</Link>
+              <Link href="/">Home</Link>
             </Button>
           </div>
         </div>

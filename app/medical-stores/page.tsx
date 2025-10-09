@@ -38,8 +38,8 @@ export default async function MedicalStoresPage() {
             </Button>
             {user ? (
               <Button asChild variant="default" size="sm" className="bg-green-600 hover:bg-green-700">
-                <Link href="/dashboard">
-                  Dashboard
+                <Link href="/">
+                  Home
                 </Link>
               </Button>
             ) : (

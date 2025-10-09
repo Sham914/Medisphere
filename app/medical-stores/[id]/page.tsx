@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
-import { redirect, notFound } from "next/navigation"
+import { notFound } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -16,11 +16,9 @@ export default async function MedicalStoreDetailPage({ params }: PageProps) {
 
   const {
     data: { user },
-    error,
   } = await supabase.auth.getUser()
-  if (error || !user) {
-    redirect("/auth/login")
-  }
+
+  // Public access - no authentication required
 
   // Get medical store details
   // Fetch store with medicines array

@@ -41,8 +41,8 @@ export default async function RemindersPage() {
             </Button>
             {user ? (
               <Button asChild variant="default" size="sm" className="bg-[#a020f0] hover:bg-[#8b1ad4]">
-                <Link href="/dashboard">
-                  Dashboard
+                <Link href="/">
+                  Home
                 </Link>
               </Button>
             ) : (

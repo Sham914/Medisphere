@@ -52,8 +52,8 @@ export default async function BloodDonationPage() {
             </Button>
             {user ? (
               <Button asChild variant="default" size="sm" className="bg-red-600 hover:bg-red-700">
-                <Link href="/dashboard">
-                  Dashboard
+                <Link href="/">
+                  Home
                 </Link>
               </Button>
             ) : (

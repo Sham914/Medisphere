@@ -32,8 +32,8 @@ export default async function HospitalsPage() {
             </Button>
             {user ? (
               <Button asChild variant="default" size="sm" className="bg-blue-600 hover:bg-blue-700">
-                <Link href="/dashboard">
-                  Dashboard
+                <Link href="/">
+                  Home
                 </Link>
               </Button>
             ) : (

@@ -49,7 +49,7 @@ export default function RegisterPage() {
         email: formData.email,
         password: formData.password,
         options: {
-          emailRedirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/dashboard`,
+          emailRedirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/`,
           data: {
             full_name: formData.fullName,
             phone: formData.phone,
@@ -61,12 +61,12 @@ export default function RegisterPage() {
       if (signUpError) throw signUpError
       
       // Since email confirmation is disabled, the user is automatically signed in
-      // Redirect directly to dashboard
+      // Redirect directly to home page
       if (authData.user) {
-        setSuccess("Account created successfully! Redirecting to dashboard...")
+        setSuccess("Account created successfully! Redirecting to your dashboard...")
         // Small delay to show success message
         setTimeout(() => {
-          router.push("/dashboard")
+          router.push("/")
         }, 1000)
       } else {
         throw new Error("Registration successful but user session not created")
