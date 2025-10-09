@@ -49,13 +49,34 @@ export async function updateSession(request: NextRequest) {
 
     console.log("[v0] Middleware user check:", { hasUser: !!user, pathname: request.nextUrl.pathname })
 
-    if (
-      request.nextUrl.pathname !== "/" &&
-      !user &&
-      !request.nextUrl.pathname.startsWith("/login") &&
-      !request.nextUrl.pathname.startsWith("/auth")
-    ) {
-      // no user, potentially respond by redirecting the user to the login page
+    // Public routes that don't require authentication
+    const publicRoutes = [
+      "/",
+      "/auth",
+      "/hospitals",
+      "/medical-stores",
+      "/blood-donation",
+    ]
+
+    // Check if current path is public
+    const isPublicRoute = publicRoutes.some(route => 
+      request.nextUrl.pathname === route || request.nextUrl.pathname.startsWith(route + "/")
+    )
+
+    // Protected routes that require authentication
+    const protectedRoutes = [
+      "/dashboard",
+      "/profile",
+      "/admin",
+      "/reminders",
+    ]
+
+    const isProtectedRoute = protectedRoutes.some(route => 
+      request.nextUrl.pathname === route || request.nextUrl.pathname.startsWith(route + "/")
+    )
+
+    // Redirect to login only for protected routes without a user
+    if (isProtectedRoute && !user) {
       const url = request.nextUrl.clone()
       url.pathname = "/auth/login"
       console.log("[v0] Redirecting to login:", url.pathname)

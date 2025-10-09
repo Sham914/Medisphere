@@ -24,7 +24,7 @@ import { Heart, Plus, MapPin, Phone, Clock, AlertTriangle, Users, Droplets } fro
 import { format, parseISO, differenceInMonths, isValid } from "date-fns"
 
 interface BloodDonationNetworkProps {
-  userId: string
+  userId: string | null
   donorProfile: any
   bloodRequests: any[]
   availableDonors: any[]
@@ -498,13 +498,23 @@ export default function BloodDonationNetwork({
               <Heart className="h-12 w-12 text-red-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">Become a Blood Donor</h3>
               <p className="text-gray-600 mb-4">Join our network and help save lives in your community</p>
-              <Dialog open={isDonorDialogOpen} onOpenChange={setIsDonorDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="bg-red-600 hover:bg-red-700">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Register as Donor
+              {!userId ? (
+                <div className="space-y-3">
+                  <p className="text-sm text-gray-500 mb-3">Sign in to register as a blood donor</p>
+                  <Button asChild className="bg-red-600 hover:bg-red-700">
+                    <a href="/auth/login">
+                      Sign In to Register
+                    </a>
                   </Button>
-                </DialogTrigger>
+                </div>
+              ) : (
+                <Dialog open={isDonorDialogOpen} onOpenChange={setIsDonorDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="bg-red-600 hover:bg-red-700">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Register as Donor
+                    </Button>
+                  </DialogTrigger>
                 <DialogContent className="max-w-md">
                   <DialogHeader>
                     <DialogTitle>Register as Blood Donor</DialogTitle>
@@ -620,7 +630,8 @@ export default function BloodDonationNetwork({
                     </div>
                   </form>
                 </DialogContent>
-              </Dialog>
+                </Dialog>
+              )}
             </div>
           )}
         </CardContent>
@@ -628,18 +639,26 @@ export default function BloodDonationNetwork({
 
       {/* Main Content Tabs */}
       <Tabs defaultValue="requests" className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:justify-between">
           <TabsList className="grid w-full max-w-md grid-cols-2">
             <TabsTrigger value="requests">Blood Requests</TabsTrigger>
             <TabsTrigger value="donors">Available Donors</TabsTrigger>
           </TabsList>
-          <Dialog open={isRequestDialogOpen} onOpenChange={setIsRequestDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-red-600 hover:bg-red-700">
+          {!userId ? (
+            <Button asChild className="bg-red-600 hover:bg-red-700">
+              <a href="/auth/login">
                 <Plus className="h-4 w-4 mr-2" />
-                Request Blood
-              </Button>
-            </DialogTrigger>
+                Sign In to Request Blood
+              </a>
+            </Button>
+          ) : (
+            <Dialog open={isRequestDialogOpen} onOpenChange={setIsRequestDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-red-600 hover:bg-red-700">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Request Blood
+                </Button>
+              </DialogTrigger>
             <DialogContent className="max-w-md">
               <DialogHeader>
                 <DialogTitle>Create Blood Request</DialogTitle>
@@ -754,7 +773,8 @@ export default function BloodDonationNetwork({
                 </div>
               </form>
             </DialogContent>
-          </Dialog>
+            </Dialog>
+          )}
         </div>
         <TabsContent value="requests" className="space-y-4">
           {bloodRequests.length > 0 ? (
